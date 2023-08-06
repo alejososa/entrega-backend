@@ -44,17 +44,6 @@
         "status": true
     },
     {
-        "id": 5,
-        "title": "5",
-        "description": "algo",
-        "price": 1750,
-        "thumbnail": "no foto",
-        "code": "05",
-        "stock": 500,
-        "category": "bebida",
-        "status": true
-    },
-    {
         "id": 6,
         "title": "6",
         "description": "algo",
@@ -118,6 +107,17 @@
         "code": "11",
         "stock": 500,
         "category": "bebida",
+        "status": true
+    },
+    {
+        "id": 12,
+        "title": "producto5",
+        "description": "p5",
+        "price": "50000",
+        "thumbnail": "no pic",
+        "code": "1234",
+        "stock": "15000",
+        "category": "none",
         "status": true
     }
 ]

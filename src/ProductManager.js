@@ -95,44 +95,7 @@ class ProductManager {
 const productManager = new ProductManager(FILE_NAME);
 async function test() {
     
-    // agrega el product con su nuevo id autoincrementable
-
-//    await productManager.addProduct({
-//        title: "coca",
- //       description:"gaseosa",
- //       price: 750,
- //       thumbnail: "no foto",
- //       code: "01",
- //       stock: 500,
- //       category:"bebida"
- //   });
-
-    //trae la lista de todos los products del archivo .json
-    //const products = await productManager.getProducts();
-    //console.log(products);
-
-    // trae el product con el id específico que se encuentra en el .json
-    //const productId = 15;
-    //const product = await manager.getProductById(productId);
-    //if (product) {
-    //    console.log(product);
-    //} else {
-    //    console.log(`The product id: ${productId} does not exist`);
-    //}
-
-    //borra un producto específico por su id
-    //await productManager.deleteProduct(4);
-
-    //actualiza un product ya sea completo o una propiedad escpecífica sin alterar su id
-    //objeto a usar para el update
-    // const productId = 1;
-    // const product = await productManager.updateProduct(productId, {
-    //   title: "manaos",
-    //   stock: 16,
-    // });
-    // if (!product) {
-    //   console.log(`The product id: ${productId} does not exist`);
-    // }
+    
 }
 export default productManager;
 test();
