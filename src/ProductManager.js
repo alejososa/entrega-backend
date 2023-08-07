@@ -93,10 +93,7 @@ class ProductManager {
 }
 
 const productManager = new ProductManager(FILE_NAME);
-async function test() {
-    
-    
-}
+
 export default productManager;
-test();
+
 
