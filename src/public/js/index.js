@@ -1,25 +1,38 @@
 const socketClient = io();
 
-const productData = document.getElementById("productData");
-const title = document.getElementById("title");
-const description = document.getElementById("description");
-const price = document.getElementById("price");
-const formDelete = document.getElementById("deleteProduct");
-const id = document.getElementById("id");
-
 socketClient.on('connect', () => {
     console.log("connected to websocket server");
 });
 
-socketClient.on("addProduct", (newProduct) => {
+socketClient.on('addProduct', (newProduct) => {
 
-    const products = document.createElement("li");
-    products.textContent = `${newProduct.title}/ ${newProduct.price} / ${newProduct.description}`;
-    
-})
+    const productList = document.getElementById("productList");
 
-productData.onsubmit = (data) => {
-    data.preventDefault();
+    const newProductItem = document.createElement("li");
 
-};
+
+    newProductItem.innerHTML = `
+    Title: ${newProduct.title} <div></div>
+    Price: $ ${newProduct.price} <div></div>
+    Description: ${newProduct.description} <div></div>
+    Code: ${newProduct.code} <div></div>
+    ID NRO: ${newProduct.id}
+    `;
+
+
+    productList.appendChild(newProductItem);
+});
+
+
+document.getElementById('newProductForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const newProduct = {};
+    formData.forEach((value, key) => {
+        newProduct[key] = value;
+    });
+    socketClient.emit('addProduct', newProduct);
+    form.reset();
+});
 

@@ -26,6 +26,7 @@ app.set('view engine', 'handlebars')
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
+app.use('/api/views/delete/:id', viewsRouter);
 
 
 const PORT = 8080;
@@ -46,9 +47,11 @@ socketServer.on('connection', (socket) => {
 
   //le agregamos  un producto
 
-  socket.on("addProduct", (newProduct)=>{
-    const addProduct= productManager.addProduct(newProduct);
-    socketServer.emit("addProduct", addProduct);
-  })
+  socket.on("addProduct",  async(newProduct)=>{
+    const addedProduct=  await productManager.addProduct(newProduct);
+  
+      socketServer.emit("addProduct", addedProduct);
+  });
 
+  
 });

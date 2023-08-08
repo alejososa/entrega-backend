@@ -21,33 +21,32 @@ class ProductManager {
     }
 
     async addProduct(product) {
-        const { title, description, price, thumbnail, code, stock, category, status } = product;
+        const { title, description, price, thumbnail, code, stock, category,} = product;
         try {
             const products = await this.getProducts();
 
             // id generator
             let id = products[products.length - 1]?.id + 1 || 1;
-            let status = true;
+            
             //confirmacion de los campos
             if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
                 
-                    return "Complete all fields";
+                    return {error:"Complete all fields"};
                 
             }
 
             //uso de codigo único
             if (products.find((product) => product.code === code)) {
                 //console.log("The product code is already in use");
-                return "The product code is already in use";
+                return {error:"The product code is already in use"};
                 
             }
-
-            const product = { id, title, description, price, thumbnail, code, stock,category, status:true };
-            products.push(product);
+            const newproduct = { id, title, description, price, thumbnail, code, stock,category, status:true };
+            products.push(newproduct);
             await fs.promises.writeFile(this.path, JSON.stringify(products));
-            return product;
+            return newproduct;
         } catch (error) {
-            return error;
+            return {error:"error al agregar el nuevo producto"};
         }
     }
 
