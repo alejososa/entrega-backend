@@ -8,21 +8,22 @@
 </head>
 <body>
     
-<div class="formularios">
+<div >
     <div>
-        <h2>Agregar Producto</h2>
-        <form id="newProductForm">
+        <h2>Add product</h2>
+        <form id="addProductForm">
             Title: <input type="text" name="title" id="title" >
             Description: <input type="text" name="description" id="description" >
             Price : <input type="number" name="price" id="price" >
             Stock : <input type="number" name="stock" id="stock" >
             Code : <input type="number" name="code" id="code" >
-            <input type="submit" value="Add">
+            Category: <input type="text" name="category" id="category">
+            <input type="submit" value="Add" id="submit">
         </form>
     </div>
     <div>
         <h2>Eliminar Producto</h2>
-        <form id="deleteProduct">
+        <form id="deleteProductForm">
             Id: <input type="number" name="productId" id="productId">
             <input type="submit" value="Delete">
         </form>
@@ -32,12 +33,12 @@
 <h1>Real time products</h1>
 <ul id="productList">
     {{#each products}}
-    <li>
+    <li data-product-id="{{this.id}}">
         Title: {{this.title}} <div></div>
         Price: $ {{this.price}} <div></div>
         Description: {{this.description}} <div></div>
         Code: {{this.code}} <div></div>
-        ID NRO: {{this.id}}
+        ID: {{this.id}}
     </li>
     {{/each}}
 </ul>

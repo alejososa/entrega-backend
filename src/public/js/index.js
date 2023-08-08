@@ -7,24 +7,22 @@ socketClient.on('connect', () => {
 socketClient.on('addProduct', (newProduct) => {
 
     const productList = document.getElementById("productList");
-
-    const newProductItem = document.createElement("li");
-
-
-    newProductItem.innerHTML = `
-    Title: ${newProduct.title} <div></div>
-    Price: $ ${newProduct.price} <div></div>
-    Description: ${newProduct.description} <div></div>
-    Code: ${newProduct.code} <div></div>
-    ID NRO: ${newProduct.id}
-    `;
+    const newItem = document.createElement("li");
 
 
-    productList.appendChild(newProductItem);
+    newItem.innerHTML = `
+        Title: ${newProduct.title} <div></div>
+        Price: ${newProduct.price} <div></div>
+        Description: ${newProduct.description} <div></div>
+        Stock : ${newProduct.stock} <div></div>
+        Code: ${newProduct.code} <div></div>
+        `
+    ;
+    productList.appendChild(newItem);
 });
 
 
-document.getElementById('newProductForm').addEventListener('submit', (event) => {
+document.getElementById('addProductForm').addEventListener('submit', (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
@@ -36,3 +34,19 @@ document.getElementById('newProductForm').addEventListener('submit', (event) => 
     form.reset();
 });
 
+document.getElementById('deleteProductForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const productId = formData.get('productId');
+    socketClient.emit('deleteProduct', productId); 
+    form.reset();
+});
+//Evento que permite al cliente identificar y recibir el ID del producto que ha sido eliminado x form, para quitarlo de la lista.
+socketClient.on('productDeleted', (productId) => {
+    const productList = document.getElementById('productList');
+    const productItem = productList.querySelector(`li[data-product-id="${productId}"]`);
+    if (productItem) {
+    productList.removeChild(productItem);
+    }
+});

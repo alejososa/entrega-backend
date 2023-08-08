@@ -48,10 +48,13 @@ socketServer.on('connection', (socket) => {
   //le agregamos  un producto
 
   socket.on("addProduct",  async(newProduct)=>{
-    const addedProduct=  await productManager.addProduct(newProduct);
-  
+    const addedProduct= productManager.addProduct(newProduct);
       socketServer.emit("addProduct", addedProduct);
   });
 
-  
+  socket.on('deleteProduct', (productId) => {
+    productManager.deleteProduct(Number(productId));
+    socketServer.emit('productDeleted', productId); 
+    socketServer.emit('newProductList'); 
+  });
 });

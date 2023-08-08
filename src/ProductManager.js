@@ -21,7 +21,7 @@ class ProductManager {
     }
 
     async addProduct(product) {
-        const { title, description, price, thumbnail, code, stock, category,} = product;
+        const { title, description, price, thumbnail, code, stock, category} = product;
         try {
             const products = await this.getProducts();
 
