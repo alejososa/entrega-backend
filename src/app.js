@@ -48,7 +48,7 @@ socketServer.on('connection', (socket) => {
   //le agregamos  un producto
 
   socket.on("addProduct",  async(newProduct)=>{
-    const addedProduct= productManager.addProduct(newProduct);
+    const addedProduct= await productManager.addProduct(newProduct);
       socketServer.emit("addProduct", addedProduct);
   });
 
