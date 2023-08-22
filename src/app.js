@@ -7,6 +7,9 @@ import  handlebars  from 'express-handlebars';
 import viewsRouter from "./routes/views.router.js";
 import { Server } from 'socket.io';
 import productManager from './ProductManager.js';
+import "./db/dbConfig.js";
+
+
 
 const app = express();
 

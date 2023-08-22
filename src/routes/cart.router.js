@@ -1,6 +1,7 @@
 import { Router } from "express"
-import cartManager from "../CartManager.js";
-
+//comiteado para usar mongoose
+//import cartManager from "../CartManager.js";
+import {cartsMongo} from "../managers/carts/CartsMongo.js";
 
 
 const router = Router();
@@ -9,20 +10,31 @@ const router = Router();
 
 // Ruta para crear un nuevo carrito
 router.post('/', (req, res) => {
-    const newCartId = cartManager.createCart();
-    if (newCartId !== null) {
-        res.status(201).json({ id: newCartId });
-    } else {
-        res.status(500).json({ error: 'Error al crear el carrito' });
+    //const newCartId = cartManager.createCart();
+    const {cart_name}=req.body;
+if(!cart_name){
+    return res.status("comple ield")
+}
+    //const newCartId= cartsMongo.createOne()
+    //if (newCartId !== null) {
+      //  res.status(201).json({ id: newCartId });
+    //} else {
+      //  res.status(500).json({ error: 'Error al crear el carrito' });
+    //}
+    try {
+        const newCart = cartsMongo.createOne(req.body)
+        res.status(200).json({message: "cart created", user:newCart})
+    } catch (error) {
+        res.status(500).json({error}) 
     }
 });
 
 // Ruta para obtener un carrito por su ID
 router.get('/:cartId', async (req, res) => {
-    const {cartId} = req.params
+    const cartId = req.params.id
     try {
-        const cart = await cartManager.getCartById(+cartId);
-
+        //const cart = await cartManager.getCartById(+cartId);
+        const cart = await cartsMongo.findById(cartId)
         if (cart !== null) {
             res.json(cart);
         } else {
@@ -36,13 +48,17 @@ router.get('/:cartId', async (req, res) => {
 
 // Ruta para agregar un producto a un carrito
 router.post('/:cartId/products/:productId', (req, res) => {
-    const {cartId, productId} = req.params;
+    const cartId = req.params.cartId;
+    const productId= req.params.productId;
     
     const {quantity} = req.body; 
 
     
-    cartManager.addProductToCart(+cartId, +productId, +quantity);
-
+    //cartManager.addProductToCart(+cartId, +productId, +quantity);
+    const cart= cartsMongo.addProductToCart(cartId, productId, quantity);
+    if(!cart){
+        return res.status(500).json({ error: 'Cant obtain cart' });
+    }
     res.status(200).json({ message: 'Product added.' });
 });
 
