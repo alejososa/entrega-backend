@@ -1,16 +1,7 @@
 import {cartsModels} from '../../db/models/carts.models.js';
 
 class CartsMongo{
-
-    async findAll(){
-        try {
-            const carts= await cartsModels.find({})
-            return carts
-        } catch (error) {
-            return error
-        }
-            }
-        
+            //crear carrito con nombre y arrays de productos vacio
             async createOne(obj){
 
                 try {
@@ -20,7 +11,15 @@ class CartsMongo{
                     return error
                 }
             }
-        
+            //buscar todos los carritos
+            async findAll(){
+                try {
+                    const carts= await cartsModels.find({})
+                } catch (error) {
+                    return error
+                }
+                    }
+        //buscar carrrito por id
             async findById(id){
                 try {
                     const cart= await cartsModels.findById(id)
@@ -31,34 +30,33 @@ class CartsMongo{
             }
         
             async addProductToCart(cartId, productId, quantity) {
-                const cart = await this.getCartById(cartId);
-                const existingProduct = cart.products.find((p) => p.product.equals(productId));
-                
-                if (existingProduct) {
-                existingProduct.quantity += quantity || 1;  
+                const cart = await this.findById(cartId);
+
+                const existingProductIndex = cart.cart_products.findIndex((p) => p.product_id === productId);
+            
+                if (existingProductIndex !== -1) {
+                    cart.cart_products[existingProductIndex].quantity += quantity || 1;
                 } else {
-                cart.products.push({ product: productId, quantity: quantity || 1 });
+                    cart.cart_products.push({ product_id: productId, quantity: quantity || 1 });
                 }
             
                 try {
-                await this.saveCart(cart);
-                console.log(`product added ${cartId}`);
+                    await cart.save(); // Guarda los cambios en la base de datos
+                    console.log(`Cart Updated ${cartId}`);
+                    return cart;
                 } catch (error) {
-                throw new Error('not possible: ' + error.message);
-                }
-            
-                return cart;
-                }
-            
-        
-            async deleteById(id){
-                try {
-                    const response = await cartsModels.deleteById(id)
-                    return "cart deleted"
-                } catch (error) {
-                    return "id not founded"
+                    throw new Error('Can\'t update cart: ' + error.message);
                 }
             }
+                async deleteOne(id){
+                    try {
+                        const response = await cartsModels.findByIdAndDelete(id)
+                        return response
+                    } catch (error) {
+                        return "id not founded"
+                    }
+                }
+            
 }
 
 export const cartsMongo = new CartsMongo()

@@ -8,7 +8,7 @@ import viewsRouter from "./routes/views.router.js";
 import { Server } from 'socket.io';
 import productManager from './ProductManager.js';
 import "./db/dbConfig.js";
-
+import { Message } from './db/models/messages.models.js';
 
 
 const app = express();
@@ -30,6 +30,14 @@ app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
 app.use('/api/views/delete/:id', viewsRouter);
+
+//ruta al chat 
+
+app.get('/chat', async (req, res) => {
+  const messages = await Message.find().sort('-timestamp'); // Obtén los mensajes de la base de datos
+  res.render('chat', { messages });
+});
+
 
 
 const PORT = 8080;
@@ -60,4 +68,19 @@ socketServer.on('connection', (socket) => {
     socketServer.emit('productDeleted', productId); 
     socketServer.emit('newProductList'); 
   });
+
+  socket.on('chatMessage', async (messageData) => {
+    const { user, message } = messageData;
+    const newMessage = new Message({ user, message });
+    await newMessage.save();
+
+    // Emitir el mensaje a todos los clientes conectados
+    socketServer.emit('chatMessage', { user, message });
+
+    console.log(`Mensaje guardado en la base de datos: ${user}: ${message}`);
+  });
+
+
+
+
 });

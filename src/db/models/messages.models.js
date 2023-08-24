@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
-const messageSchema= new mongoose.Schema({
-    message:{
-type:String,
-    },
-})
-
-export const messageModels= mongoose.model("messge", messageSchema)
+const messageSchema = new mongoose.Schema({
+    user: String,
+    content: String,
+    timestamp: { type: Date, default: Date.now }
+    });
+    
+    export const Message = mongoose.model('Message', messageSchema);
+    
