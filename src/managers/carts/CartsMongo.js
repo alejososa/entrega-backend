@@ -15,6 +15,7 @@ class CartsMongo{
             async findAll(){
                 try {
                     const carts= await cartsModels.find({})
+                    return carts
                 } catch (error) {
                     return error
                 }

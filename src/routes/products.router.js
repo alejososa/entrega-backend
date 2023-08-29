@@ -13,11 +13,12 @@ router.get('/', async (req, res)=>{
     try {
         //const products = await productManager.getProducts()
         const products  = await productsMongo.findAll()
-        const limit= req.query.limit
-        const resLimit= products.slice(0,limit)
-        res.status(200).json({message:"Products", resLimit})
+        //const limit= req.query.limit
+        //const resLimit= products.slice(0,limit)
+        res.status(200).json({message:"Products", products})
         
     } catch (error) {
+        
         res.status(500).json({error})
     }
 })

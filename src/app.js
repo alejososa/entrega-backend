@@ -6,7 +6,7 @@ import { __dirname } from './utils.js';
 import  handlebars  from 'express-handlebars';
 import viewsRouter from "./routes/views.router.js";
 import { Server } from 'socket.io';
-import productManager from './ProductManager.js';
+import productManager from './managers/products/ProductManager.js';
 import "./db/dbConfig.js";
 import { Message } from './db/models/messages.models.js';
 

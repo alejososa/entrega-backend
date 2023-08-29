@@ -33,8 +33,8 @@ if(!cart_name){
 router.get('/', async (req,res)=>{
     try {
         const carts = await cartsMongo.findAll()
-        res.status(200).json({message:"Carts"})
-        return carts
+        res.status(200).json({message:"Carts", carts})
+    
     } catch (error) {
         res.status(500).json({error})
     }
