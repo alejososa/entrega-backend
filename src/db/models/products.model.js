@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+
+
+
 
 const productsSchema=new mongoose.Schema({
     product_title:{
@@ -32,5 +36,7 @@ const productsSchema=new mongoose.Schema({
 
 })
 
+//asocio el schema al plugin de paginate
+productsSchema.plugin(mongoosePaginate)
 
 export const productsModels= mongoose.model('products', productsSchema);

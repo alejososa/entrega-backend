@@ -6,12 +6,19 @@ const cartsSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    cart_products:[{
+    cart_products:[
+        {
         product_id: String,
         product_title: String,
-        quantity: Number
-
-    }]
+        quantity: Number        
+        }
+        ],
+   // products:[
+     //   {
+       //     type: mongoose.Schema.Types.ObjectId,
+         //   ref: 'products'
+        //}
+   // ]
         
     //más adelante vamos a er como relacionar esto y agregar la lista de productos seleccionados
 });

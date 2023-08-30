@@ -1,14 +1,51 @@
 import {productsModels} from '../../db/models/products.model.js'
 
 class ProductsMongo{
-    async findAll(){
-try {
-    const products= await productsModels.find({})
-    return products
-} catch (error) {
-    return error
-}
+ //   async findAll(){
+  //  try {
+  //  const products= await productsModels.find({})
+  //  return products
+//}   catch (error) {
+//    return error
+//}
+ //   }
+  ////////// nuevo findAll con paginate////////
+
+    
+// async findAll(limit, page){
+//     try {
+//         const products = await productsModels.paginate({},{limit , page})
+//         return products
+//     } catch (error) {
+//         return error
+//     }
+// }
+
+async findAll(obj){
+    const {limit, page, sortProduct_price, ...query}=obj
+    console.log(query);
+    try {
+        const products = await productsModels.paginate(query,{limit,page,sort:{product_price:sortProduct_price}})
+
+        const info={
+        payload:products.docs,
+        totalPages:products.totalPages,
+        prePage: products.prevPage,
+        nextPage: products.nextPage,
+        page: products.page,
+        hasPrevPage: products.hasPrevPage,
+        hasNextPage: products.hasNextPage,
+        nextPageLink: `http://localhost:8080/api/products?page=${products.nextPage}`,
+        prevPageLink: `http://localhost:8080/api/products?page=${products.prevPage}`,
+        
+            
+        }
+        return info
+    } catch (error) {
+        return error
     }
+}
+
 
     async createOne(obj){
         try {
@@ -43,6 +80,26 @@ try {
             return response
         } catch (error) {
             return "id not founded"
+        }
+    }
+
+    async aggregationMet(){
+        try {
+            const response = await productsModels.aggregate([
+                {$match:{product_code:{$lt:400}}},
+                {$group:{
+                    _id: '$product_description',
+                    product_count: {$count:{}},
+                    promedio_precio: {$avg:'$product_price'},
+                }},
+                {$sort:{product_count:1}}
+                //{$count:"products less than 400"}
+            ])
+
+
+            return response
+        } catch (error) {
+            return error
         }
     }
 }

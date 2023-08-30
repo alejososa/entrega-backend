@@ -9,12 +9,20 @@ import {productsMongo} from "../managers/products/ProductsMongo.js";
 const router =Router() ;
 
 
+////// agregation ( pregutnar porque tengoq ue ponerlo arriba)///////////////////
+
+router.get('/aggregation', async (req,res)=>{
+    const response = await productsMongo.aggregationMet()
+    res.json({response})
+})
+
+
+
 router.get('/', async (req, res)=>{
     try {
-        //const products = await productManager.getProducts()
-        const products  = await productsMongo.findAll()
-        //const limit= req.query.limit
-        //const resLimit= products.slice(0,limit)
+        
+        const products  = await productsMongo.findAll(req.query)
+        
         res.status(200).json({message:"Products", products})
         
     } catch (error) {
@@ -22,6 +30,22 @@ router.get('/', async (req, res)=>{
         res.status(500).json({error})
     }
 })
+
+//funcionando bien 
+// router.get('/', async (req, res)=>{
+//     try {
+//         //const products = await productManager.getProducts()
+//         const products  = await productsMongo.findAll()
+//         //const limit= req.query.limit
+//         //const resLimit= products.slice(0,limit)
+//         res.status(200).json({message:"Products", products})
+        
+//     } catch (error) {
+        
+//         res.status(500).json({error})
+//     }
+// })
+
 
 //get
 router.get('/:id', async (req, res)=>{
@@ -73,6 +97,8 @@ router.put('/:id', async (req, res)=>{
         res.status(500).json({error})
     }
 })
+
+
 
 
 
