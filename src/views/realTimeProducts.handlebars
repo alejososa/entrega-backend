@@ -32,18 +32,14 @@
 </div>
 
 <h1>Real time products</h1>
-<ul id="productList">
+<ul>
     {{#each products}}
-    <li data-product-id="{{this.id}}">
-        Title: {{this.title}} <div></div>
-        Price: $ {{this.price}} <div></div>
-        Description: {{this.description}} <div></div>
-        Code: {{this.code}} <div></div>
-        ID: {{this.id}}
+    <li>
+    {{this}}
+       
     </li>
     {{/each}}
 </ul>
-
 
 
 

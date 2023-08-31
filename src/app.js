@@ -6,9 +6,10 @@ import { __dirname } from './utils.js';
 import  handlebars  from 'express-handlebars';
 import viewsRouter from "./routes/views.router.js";
 import { Server } from 'socket.io';
-import productManager from './managers/products/ProductManager.js';
+//import productManager from './managers/products/ProductManager.js';
 import "./db/dbConfig.js";
 import { Message } from './db/models/messages.models.js';
+import { productsMongo } from './managers/products/ProductsMongo.js';
 
 
 const app = express();
@@ -56,15 +57,15 @@ socketServer.on('connection', (socket) => {
     console.log(`Cliente desconectado`);
   });
 
-  //le agregamos  un producto
+//le agregamos  un producto
 
   socket.on("addProduct",  async(newProduct)=>{
-    const addedProduct= await productManager.addProduct(newProduct);
-      socketServer.emit("addProduct", addedProduct);
+    const addedProduct= await productsMongo.createOne(newProduct);
+      socketServer.emit("product created", addedProduct);
   });
 
   socket.on('deleteProduct', (productId) => {
-    productManager.deleteProduct(Number(productId));
+    productsMongo.deleteOne(Number(productId));
     socketServer.emit('productDeleted', productId); 
     socketServer.emit('newProductList'); 
   });

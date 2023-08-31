@@ -1,20 +1,20 @@
 import {productsModels} from '../../db/models/products.model.js'
 
 class ProductsMongo{
- //   async findAll(){
-  //  try {
-  //  const products= await productsModels.find({})
-  //  return products
-//}   catch (error) {
-//    return error
-//}
- //   }
+    async findAllViews(){
+    try {
+    const products= await productsModels.find()
+    return products
+}   catch (error) {
+    return error
+}
+    }
   ////////// nuevo findAll con paginate////////
 
 async findAll(obj){
-    const {limit=3, page=1, sortProduct_price, ...query}=obj
-    console.log(query);
     try {
+        const {limit=3, page=1, sortProduct_price, ...query}=obj
+        console.log(query);
         const products = await productsModels.paginate(query,{limit,page,sort:{product_price:sortProduct_price}})
 
         const info={
