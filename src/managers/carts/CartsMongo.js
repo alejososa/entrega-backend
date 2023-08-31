@@ -60,15 +60,30 @@ class CartsMongo{
                 }
         //deletea un producto del cart seleccionado  
             async deleteProductFromCart(cartId, productId){
-            try {
-                const cart = await cartsModels.findById(cartId)
-                if(!cart) throw new error ("Cart doens exist")
-                const response= await cartsModels.updateOne({_id:cartId},{$pull:{cart_products:productId}})
-                return response
+                const cart = await this.findById(cartId);
+                const existingProductIndex = cart.cart_products.findIndex((p) => p.product_id === productId);
+                if (existingProductIndex) {
+                    cart.cart_products.pull({product_id:productId})
+                    
+                } else {
+                    throw new error("this cart does not hace that product")
+                }
+                try {
+                    await cart.save();
+                    console.log(`Product ${productId} from cart ${cartId}, was deleted`);
+                } catch (error) {
+                    return error
+                }
+            
+            // try {
+            //     const cart = await cartsModels.findById(cartId)
+            //     if(!cart) throw new error ("Cart doens exist")
+            //     const response= await cartsModels.updateOne({_id:cartId},{$pull:{cart_products:productId}})
+            //     return response
 
-            } catch (error) {
-                return error
-            }
+            // } catch (error) {
+            //     return error
+            // }
                 }
 }
 

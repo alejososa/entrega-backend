@@ -76,14 +76,14 @@ router.put('/', async (req,res)=>{
         }
 })
 
-//ruta para deletear un producto de un carrito determinado
+//ruta para deletear un producto de un carrito determinado 
 
 router.delete('/:cartId/products/:productId', async(req,res)=>{
-    const{cartId,productId}=req.params
-
+    
     try {
-        const result = await cartsMongo.deleteProductFromCart(cartId,productId)
-        res.status(200).json({message:"product deleted"})
+        const{cartId,productId}=req.params
+        const result = await cartsMongo.deleteProductFromCart(cartId,productId);
+        res.status(200).json({message:"product deleted"});
     } catch (error) {
         res.status(500).json({error})
     }

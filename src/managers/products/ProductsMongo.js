@@ -11,18 +11,8 @@ class ProductsMongo{
  //   }
   ////////// nuevo findAll con paginate////////
 
-    
-// async findAll(limit, page){
-//     try {
-//         const products = await productsModels.paginate({},{limit , page})
-//         return products
-//     } catch (error) {
-//         return error
-//     }
-// }
-
 async findAll(obj){
-    const {limit, page, sortProduct_price, ...query}=obj
+    const {limit=3, page=1, sortProduct_price, ...query}=obj
     console.log(query);
     try {
         const products = await productsModels.paginate(query,{limit,page,sort:{product_price:sortProduct_price}})
