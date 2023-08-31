@@ -29,7 +29,7 @@ class CartsMongo{
                     return error
                 }
             }
-        
+        //sumar producto al cart
             async addProductToCart(cartId, productId, quantity) {
                 const cart = await this.findById(cartId);
 
@@ -49,6 +49,7 @@ class CartsMongo{
                     throw new Error('Can\'t update cart: ' + error.message);
                 }
             }
+        //delete one cart by id    
             async deleteOne(id){
                     try {
                         const response = await cartsModels.findByIdAndDelete(id)
@@ -57,7 +58,18 @@ class CartsMongo{
                         return "id not founded"
                     }
                 }
-            
+        //deletea un producto del cart seleccionado  
+            async deleteProductFromCart(cartId, productId){
+            try {
+                const cart = await cartsModels.findById(cartId)
+                if(!cart) throw new error ("Cart doens exist")
+                const response= await cartsModels.updateOne({_id:cartId},{$pull:{cart_products:productId}})
+                return response
+
+            } catch (error) {
+                return error
+            }
+                }
 }
 
 export const cartsMongo = new CartsMongo()
