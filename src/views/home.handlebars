@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
+ <h1>PRODUCTS</h1>
+    <ul>
+        {{#each products as |products|}}
+<li>
+    {{this}}
     
-<h1>Products</h1>
-<ul>
-    {{#each products}}
-    
+</li>
+        {{!--  no funciona 
+        <li>
+            title: {{this.product_title}} <div></div>
+            description:{{this.product_price}} <div></div>
+            price:{{this.product_price}} <div></div>
+            code:{{this.product_code}} <div></div>
+            stock:{{this.product_stock}} <div></div>
+            category:{{this.product_category}} <div></div>
+            thumbnail: {{this.product_thumbnail}} <div></div>
+        </li> --}}
+        
+            
+        
+        {{/each}}
+    </ul>
 
-      <li >
-     
-     title :{{this}}
-
-     
-     </li> 
-
-    
-       
-    
-    {{/each}}
-</ul>
-
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/index.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index.js"></script>
 </body>
 </html>

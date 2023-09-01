@@ -8,20 +8,34 @@ const router = Router()
 
 //listado de productos renderizados desde "home"
 router.get('/', async (req, res) => {
-    const products = await productsMongo.findAllViews();
-    res.render('home', { products });
+    try {
+        const products = await productsMongo.findAllViews();
+    res.render('home', {products} );
 
+    } catch (error) {
+        return error
+    }
 });
 
 router.get('/realTimeProducts', async (req, res) => {
     try {
         const products = await productsMongo.findAllViews();
+        //const productsJSON = JSON.stringify(products);
         res.render('realTimeProducts', { products })
 
     } catch (error) {
         res.status(500).json({ error: 'Cant obtain products list' });
     }
 });
+
+router.get('/products', async (req,res)=>{
+    try {
+        const products = await productsModels.find()
+        res.render('products', {products});
+    } catch (error) {
+        res.status(500).json({ error: 'Cant obtain products list' });
+    }
+})
 
 
 
