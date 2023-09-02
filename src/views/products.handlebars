@@ -7,15 +7,13 @@
 </head>
 <body>
     <h1>PRODUCTS</h1>
-    <ul>
-        {{#each products }}
-<li>
-   {{this}}
-    <button class="add-to-cart-button">Agregar al carrito</button>
-</li>
-
-        
-        {{/each}}
+     {{#each payload}}
+  <h1>{{this}}</h1>
+    {{/each}}
+    
+    {{#each product_price}}
+   <h1>{{this}}</h1>
+    {{/each}}
     </ul>
 
     <script src="/socket.io/socket.io.js"></script>
