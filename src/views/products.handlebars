@@ -6,16 +6,22 @@
     <title>products</title>
 </head>
 <body>
-    <h1>PRODUCTS</h1>
-     {{#each payload}}
-  <h1>{{this}}</h1>
-    {{/each}}
-    
-    {{#each product_price}}
-   <h1>{{this}}</h1>
-    {{/each}}
-    </ul>
+    <ul>
+  {{#each payload}}
+    <li>
+        
+      <h2>Nombre producto: {{product_title}}</h2>
+      <p>{{product_thumbnail}}</p>
+      <p>Precio: {{product_price}}</p>
+      <p>{{product_description}}</p>
+      
+      <button class="add-to-cart-button" data-product-id={{_id}}>Agregar al carrito</button>
+    </li>
+  {{/each}}
+</ul>
 
+    
+</body>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>
 </html>

@@ -13,10 +13,10 @@ class ProductsMongo {
 
   async findAll(obj) {
     try {
-      const { limit=4 , page=1, sortProduct_price= "ASC" } = obj 
+      const { limit=4 , page=1, sortProduct_price= "ASC"} = obj 
       const response = await productsModels.paginate(
         {},
-        { limit, page, sort: { product_price: sortProduct_price } }
+        { limit, page, sort: { product_price: sortProduct_price }, lean:true }
       );
       const info = {
         status: response.docs.length ? "success" : "error",
