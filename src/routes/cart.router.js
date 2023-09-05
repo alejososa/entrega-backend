@@ -34,7 +34,7 @@ router.get('/', async (req,res)=>{
     try {
         const carts = await cartsMongo.findAll()
         res.status(200).json({message:"Carts", carts})
-    
+        return carts
     } catch (error) {
         res.status(500).json({error})
     }

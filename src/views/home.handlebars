@@ -8,28 +8,28 @@
 </head>
 
 <body>
- <h1>PRODUCTS</h1>
-    <ul>
-        {{#each products as |products|}}
-<li>
-    {{this}}
-    
-</li>
-        {{!--  no funciona 
-        <li>
-            title: {{this.product_title}} <div></div>
-            description:{{this.product_price}} <div></div>
-            price:{{this.product_price}} <div></div>
-            code:{{this.product_code}} <div></div>
-            stock:{{this.product_stock}} <div></div>
-            category:{{this.product_category}} <div></div>
-            thumbnail: {{this.product_thumbnail}} <div></div>
-        </li> --}}
+  <ul>
+
+    <h1>Lista de productos</h1>
+  {{#each payload}}
+    <li>
         
-            
-        
-        {{/each}}
-    </ul>
+      <h2>Nombre producto: {{product_title}}</h2>
+      <p>thumbnail:{{product_thumbnail}}</p>
+      <p>Precio: {{product_price}}</p>
+      <p>Descripcion:{{product_description}}</p>
+      <p>Code:{{product_code}}</p>
+      <p>Stock:{{product_stock}}</p>
+      <p>Category:{{product_vategory}}</p>
+
+    </li>
+  {{/each}}
+</ul>
+
+
+
+
+
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>
