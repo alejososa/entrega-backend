@@ -11,7 +11,7 @@ socketClient.on('addProduct', (newProduct) => {
 
 
     newItem.innerHTML =
-    
+
         `
         Title: ${newProduct.title} <div></div>
         Price: ${newProduct.price} <div></div>
@@ -22,36 +22,36 @@ socketClient.on('addProduct', (newProduct) => {
         Category : ${newProduct.category} <div></div>
         Id : ${newProduct.id}
         `;
-        console.log(newProduct);
+    console.log(newProduct);
     productList.appendChild(newItem);
 });
 
 
-// document.getElementById('addProductForm').addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     const form = event.target;
-//     const formData = new FormData(form);
-//     const newProduct = {};
-//     formData.forEach((value, key) => {
-//         newProduct[key] = value;
-//     });
-//     socketClient.emit('addProduct', newProduct);
-//     form.reset();
-// });
+document.getElementById('addProductForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const newProduct = {};
+    formData.forEach((value, key) => {
+        newProduct[key] = value;
+    });
+    socketClient.emit('addProduct', newProduct);
+    form.reset();
+});
 
-// document.getElementById('deleteProductForm').addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     const form = event.target;
-//     const formData = new FormData(form);
-//     const productId = formData.get('productId');
-//     socketClient.emit('deleteProduct', productId); 
-//     form.reset();
-// });
+document.getElementById('deleteProductForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+        const formData = new FormData(form);
+    const productId = formData.get('productId');
+    socketClient.emit('deleteProduct', productId);
+    form.reset();
+});
 
 socketClient.on('productDeleted', (productId) => {
     const productList = document.getElementById('productList');
     const productItem = productList.querySelector(`li[data-product-id="${productId}"]`);
     if (productItem) {
-    productList.removeChild(productItem);
+        productList.removeChild(productItem);
     }
 });

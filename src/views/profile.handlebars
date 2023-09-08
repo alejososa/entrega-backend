@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>products</title>
-</head>
-<body>
 <div>
-   
+    <h1>Hola, {{user.name}}</h1>
+    <h1>{{user.email}}</h1>
 </div>
 
-  <h1>Que compramos hoy?</h1>
+<h1>Que compramos hoy?</h1>
     <ul>
   {{#each payload}}
     <li>
@@ -24,9 +17,7 @@
     </li>
   {{/each}}
 </ul>
-<a href="/api/views/login"><button>Cerrar sesión</button></a>
+
     
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>
-</body>
-</html>

@@ -1,23 +1,36 @@
 
 import express from 'express';
+import session from 'express-session'
 import productRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
-import { __dirname } from './utils.js';
 import  handlebars  from 'express-handlebars';
-import viewsRouter from "./routes/views.router.js";
+import sessionsRouter from"./routes/sessions.router.js";
 import { Server } from 'socket.io';
-//import productManager from './managers/products/ProductManager.js';
 import "./db/dbConfig.js";
+//import productManager from './managers/products/ProductManager.js';
 import { Message } from './db/models/messages.models.js';
 import { productsMongo } from './managers/products/ProductsMongo.js';
+import MongoStore from 'connect-mongo';
+import viewsRouter from "./routes/views.router.js";
+import FileStore  from 'session-file-store';
+import mongoose from 'mongoose';
+const fileStorage= FileStore(session);
 
 
+import { __dirname } from './utils.js';
 const app = express();
 
-// Estas dos líneas son claves para que el servidor entienda e interprete lo que pasa
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname+"/public"));
+
+//codigo del session
+app.use(session({
+  store:  MongoStore.create({
+    mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
+    ttl:3600,
+  }),
+  secret:"CoderS3cret",
+  resave:false,
+  saveUninitialized: false,
+}));
 
 //handlebars
 
@@ -25,13 +38,21 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
+// Estas dos líneas son claves para que el servidor entienda e interprete lo que pasa
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname+"/public"));
+
+
+
+
 
 // Rutas
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
 app.use('/api/views/delete/:id', viewsRouter);
-
+app.use('/api/sessions', sessionsRouter);
 //ruta al chat 
 
 app.get('/chat', async (req, res) => {

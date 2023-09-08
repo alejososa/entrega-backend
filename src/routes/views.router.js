@@ -27,6 +27,7 @@ router.get("/realTimeProducts", async (req, res) => {
 });
 
 router.get("/products", async (req, res) => {
+  
   try {
     const response = await productsMongo.findAll(req.query);
     console.log(response)
@@ -34,6 +35,7 @@ router.get("/products", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Cant obtain products list" });
   }
+  
 });
 
 router.get("/carts/:id", async(req,res)=>{
@@ -47,6 +49,22 @@ router.get("/carts/:id", async(req,res)=>{
     
   }
 })
+
+//rutas para la session
+
+router.get("/register", (req,res)=>{
+  res.render('register');
+})
+
+router.get('/login', (req,res)=>{
+  res.render("login");
+})
+
+router.get('/profile',(req,res)=>{
+  res.render('profile',{
+      user:req.sessions.user
+  })
+  })
 
 
 export default router;
