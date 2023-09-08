@@ -45,7 +45,8 @@ router.get('/:id', async (req, res) => {
     const cartId = req.params.id
     try {
         //const cart = await cartManager.getCartById(+cartId);
-        const cart = await cartsMongo.findById(cartId)
+        const cart = await cartsMongo.PopulatedCartById(cartId)
+        res.json(cart.products)
         res.status(200).json({message:"cart founded", cart})
     } catch (err) {
         res.status(500).json({message:"cart not founded"})

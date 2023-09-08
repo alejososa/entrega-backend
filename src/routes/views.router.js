@@ -45,7 +45,7 @@ router.get("/carts/:id", async(req,res)=>{
     console.log(response);
     res.render("carts", response)
   } catch (error) {
-    res.status(500).json({ error: "Cant obtain carts list" });
+    res.status(500).json({ error: "there is no cart with that id" });
     
   }
 })

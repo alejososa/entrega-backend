@@ -10,7 +10,7 @@ const cartsSchema = new mongoose.Schema({
   cart_products: [
 
     {
-      // cuando uso el populate aca no funciona bien el quantity
+      //cuando uso el populate aca no funciona bien el quantity
       // product: {
       //   type: mongoose.Schema.Types.ObjectId,
       //   ref: "products",
@@ -18,10 +18,10 @@ const cartsSchema = new mongoose.Schema({
       // quantity: {
       //   type: Number
       // },
-       product_id: String,
-       product_title: String,
-       quantity: Number
-    },  
+        product_id: String,
+        product_title: String,
+        quantity: Number
+    },
   ],
   //más adelante vamos a er como relacionar esto y agregar la lista de productos seleccionados
 });
