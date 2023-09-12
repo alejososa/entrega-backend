@@ -1,6 +1,18 @@
 import { Router } from "express";
 import userModel from "../db/models/users.model.js";
+
+
 const router = Router();
+
+
+
+router.get("/login", async(req,res)=>{
+    const {email,password}=req.body;
+    req.session["email"]= email
+    req.session["password"]=password
+    console.log(req);
+    res.send("probando session")
+})
 
 
 router.post('/register', async (req, res) => {

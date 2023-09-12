@@ -1,6 +1,7 @@
 
 import express from 'express';
 import session from 'express-session'
+import cookieParser from 'cookie-parser';
 import productRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
 import  handlebars  from 'express-handlebars';
@@ -15,9 +16,9 @@ import viewsRouter from "./routes/views.router.js";
 import FileStore  from 'session-file-store';
 import mongoose from 'mongoose';
 const fileStorage= FileStore(session);
-
-
 import { __dirname } from './utils.js';
+
+
 const app = express();
 
 
@@ -43,7 +44,32 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname+"/public"));
 
+//cookies
 
+app.use(cookieParser("secretKeyCookies")) 
+
+
+// app.get("/guardarcookie",(req,res)=>{
+//   res.cookie("cookie1","primeraCookie").send()
+// })
+// app.get("/leercookie",(req,res)=>{
+//   console.log(req);
+//   const {cookie1}= req.cookies
+//   res.json({message:"Leyendo cookie",...req.cookies,...req.signedCookies});
+// })
+// app.get("/eliminarcookie",(req,res)=>{
+//   res.clearCookie("cookie1").send("eliminando cookie")
+// })
+// app.get("/guardarcookiefirmada",(req,res)=>{
+//   res.cookie("cookienormal","primera cookie",{signed:true}).send()
+// })
+
+//sessions
+
+app.use(session({
+  secret:"secretSession",
+  cookie:{maxAge:60000}
+}))
 
 
 
