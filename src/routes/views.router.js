@@ -10,7 +10,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const response = await productsMongo.findAll(req.query);
-    res.render("home", response );
+    res.render("home", response);
   } catch (error) {
     res.status(500).json({ error: "Cant obtain product list" });
   }
@@ -27,7 +27,7 @@ router.get("/realTimeProducts", async (req, res) => {
 });
 
 router.get("/products", async (req, res) => {
-  
+
   try {
     const response = await productsMongo.findAll(req.query);
     console.log(response)
@@ -35,36 +35,36 @@ router.get("/products", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Cant obtain products list" });
   }
-  
+
 });
 
-router.get("/carts/:id", async(req,res)=>{
-  const cartId=req.params.id
+router.get("/carts/:id", async (req, res) => {
+  const cartId = req.params.id
   try {
     const response = await cartsMongo.findById(cartId)
     console.log(response);
     res.render("carts", response)
   } catch (error) {
     res.status(500).json({ error: "there is no cart with that id" });
-    
+
   }
 })
 
 //rutas para la session
 
-router.get("/register", (req,res)=>{
+router.get("/register", (req, res) => {
   res.render('register');
 })
 
-router.get('/login', (req,res)=>{
+router.get('/login', (req, res) => {
   res.render("login");
 })
 
-router.get('/profile',(req,res)=>{
-  res.render('profile',{
-      user:req.sessions.user
+router.get('/profile', (req, res) => {
+  res.render('profile', {
+    user: req.session.user
   })
-  })
+})
 
 
 export default router;

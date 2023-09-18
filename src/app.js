@@ -4,8 +4,8 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser';
 import productRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
-import  handlebars  from 'express-handlebars';
-import sessionsRouter from"./routes/sessions.router.js";
+import handlebars from 'express-handlebars';
+import sessionsRouter from "./routes/sessions.router.js";
 import { Server } from 'socket.io';
 import "./db/dbConfig.js";
 //import productManager from './managers/products/ProductManager.js';
@@ -13,25 +13,31 @@ import { Message } from './db/models/messages.models.js';
 import { productsMongo } from './managers/products/ProductsMongo.js';
 import MongoStore from 'connect-mongo';
 import viewsRouter from "./routes/views.router.js";
-import FileStore  from 'session-file-store';
+import FileStore from 'session-file-store';
 import mongoose from 'mongoose';
-const fileStorage= FileStore(session);
 import { __dirname } from './utils.js';
-
+import passport from 'passport';
+import './passport/passportStrategies.js'
 
 const app = express();
+const fileStorage = FileStore(session);
 
 
-//codigo del session
+//codigo del sessi
 app.use(session({
-  store:  MongoStore.create({
+  store: new MongoStore({
     mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
-    ttl:3600,
+    ttl: 3600,
   }),
-  secret:"CoderS3cret",
-  resave:false,
+  secret: "secretSession",
+  resave: false,
   saveUninitialized: false,
 }));
+
+//passport
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 //handlebars
 
@@ -42,34 +48,34 @@ app.set('view engine', 'handlebars')
 // Estas dos líneas son claves para que el servidor entienda e interprete lo que pasa
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname+"/public"));
+app.use(express.static(__dirname + "/public"));
 
 //cookies
 
-app.use(cookieParser("secretKeyCookies")) 
+app.use(cookieParser("secretKeyCookies"))
 
 
-// app.get("/guardarcookie",(req,res)=>{
-//   res.cookie("cookie1","primeraCookie").send()
-// })
-// app.get("/leercookie",(req,res)=>{
-//   console.log(req);
-//   const {cookie1}= req.cookies
-//   res.json({message:"Leyendo cookie",...req.cookies,...req.signedCookies});
-// })
-// app.get("/eliminarcookie",(req,res)=>{
-//   res.clearCookie("cookie1").send("eliminando cookie")
-// })
-// app.get("/guardarcookiefirmada",(req,res)=>{
-//   res.cookie("cookienormal","primera cookie",{signed:true}).send()
-// })
+app.get("/guardarcookie", (req, res) => {
+  res.cookie("cookie1", "primeraCookie").send()
+})
+app.get("/leercookie", (req, res) => {
+  console.log(req);
+  const { cookie1 } = req.cookies
+  res.json({ message: "Leyendo cookie", ...req.cookies, ...req.signedCookies });
+})
+app.get("/eliminarcookie", (req, res) => {
+  res.clearCookie("cookie1").send("eliminando cookie")
+})
+app.get("/guardarcookiefirmada", (req, res) => {
+  res.cookie("cookienormal", "primera cookie", { signed: true }).send()
+})
 
 //sessions
 
-app.use(session({
-  secret:"secretSession",
-  cookie:{maxAge:60000}
-}))
+// app.use(session({
+//   secret:"secretSession",
+//   cookie:{maxAge:60000}
+// }))
 
 
 
@@ -78,7 +84,28 @@ app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
 app.use('/api/views/delete/:id', viewsRouter);
+
+
 app.use('/api/sessions', sessionsRouter);
+//y sus rutas
+//rutas para la session
+
+app.get("/register", (req,res)=>{
+  res.render('register');
+});
+
+app.get('/login', (req,res)=>{
+  res.render("login");
+});
+
+app.get('/profile',(req,res)=>{
+  res.render('profile',{
+      user:req.session.user
+  });
+});
+
+
+
 //ruta al chat 
 
 app.get('/chat', async (req, res) => {
@@ -104,17 +131,17 @@ socketServer.on('connection', (socket) => {
     console.log(`Cliente desconectado`);
   });
 
-//le agregamos  un producto
+  //le agregamos  un producto
 
-  socket.on("addProduct",  async(newProduct)=>{
-    const addedProduct= await productsMongo.createOne(newProduct);
-      socketServer.emit("product created", addedProduct);
+  socket.on("addProduct", async (newProduct) => {
+    const addedProduct = await productsMongo.createOne(newProduct);
+    socketServer.emit("product created", addedProduct);
   });
 
   socket.on('deleteProduct', (productId) => {
     productsMongo.deleteOne(Number(productId));
-    socketServer.emit('productDeleted', productId); 
-    socketServer.emit('newProductList'); 
+    socketServer.emit('productDeleted', productId);
+    socketServer.emit('newProductList');
   });
 
   socket.on('chatMessage', async (messageData) => {
