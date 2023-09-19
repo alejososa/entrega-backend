@@ -2,7 +2,7 @@ import { Router } from "express";
 import userModel from "../db/models/users.model.js";
 import passport from "passport";
 import { usersManager } from "../managers/users/userManager.js";
-import  {compareData}  from "../utils.js";
+import { compareData } from "../utils.js";
 
 const router = Router();
 
@@ -53,9 +53,9 @@ router.post("/login", async (req, res) => {
     }
     //chequeamos el password
     const isPasswordValid = await compareData(password, userDB.password)
-    
+
     if (!isPasswordValid) {
-        
+
         return res.status(401).json({ message: 'Username or Password not valid' })
     }
 
@@ -79,10 +79,16 @@ router.get('/logout', (req, res) => {
 
 //passport
 
-router.get('/githubSingUp', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { });
+router.get("/githubSignup", passport.authenticate("github", { scope: ["user:email"] })
+);
 
-router.get('/github', passport.authenticate('github'), async (req, res) => {
-    res.send("bienvenido desde github")
-})
+router.get("/github", passport.authenticate("github", {
+    failureMessage: "Cant log with github"
+}), (req,res)=>{
+    console.log(req.user);
+    req.session["username"]=req.user.username;
+    res.send("prueba");
+}
+);
 
 export default router;

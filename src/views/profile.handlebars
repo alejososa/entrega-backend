@@ -3,19 +3,9 @@
     <h1>{{user.email}}</h1>
 </div>
 
-<h1>Que compramos hoy?</h1>
+<h1>Empezamos a comprar?</h1>
     <ul>
-  {{#each payload}}
-    <li>
-        
-      <h2>Nombre producto: {{product_title}}</h2>
-      <p>{{product_thumbnail}}</p>
-      <p>Precio: {{product_price}}</p>
-      <p>{{product_description}}</p>
-      
-      <button class="add-to-cart-button" data-product-id={{_id}}>Agregar al carrito</button>
-    </li>
-  {{/each}}
+    <a href="http://localhost:8080/api/views/products">ver productos</a>
 </ul>
 
     

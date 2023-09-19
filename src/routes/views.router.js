@@ -38,6 +38,16 @@ router.get("/products", async (req, res) => {
 
 });
 
+// router.get("/profile", async(req,res)=>{
+//   try {
+//     const response =await productsMongo.findAll(req.query);
+//     console.log(response);
+//     res.render("profile", response);
+//   } catch (error){
+//     res.status(500).json({error:"cant obtain products list"});
+//   }
+// })
+
 router.get("/carts/:id", async (req, res) => {
   const cartId = req.params.id
   try {
@@ -60,10 +70,10 @@ router.get('/login', (req, res) => {
   res.render("login");
 })
 
-router.get('/profile', (req, res) => {
-  res.render('profile', {
-    user: req.session.user
-  })
+router.get('/profile',(req, res) => {
+  
+  res.render('profile', {user: req.session.user});
+
 })
 
 
