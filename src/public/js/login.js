@@ -18,9 +18,14 @@ form.addEventListener('submit', async (event) => {
             'Content-Type': 'application/json'
         }
     })
-    
-    // const responseData = await response.json();
-    // console.log(responseData);
+
+
+
+   // const responseData = await response.json();
+   // console.log(responseData);
+
+
+
     if (response.status === 200) {
         window.location.replace('http://localhost:8080/api/views/profile')
     }

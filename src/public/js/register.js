@@ -27,5 +27,8 @@ form.addEventListener("submit", async (event) => {
     if (responseData.status === "success") {
         window.location.replace('http://localhost:8080/api/views/login');
     }
+    console.log("llegamos aca");
+
+
 });
 

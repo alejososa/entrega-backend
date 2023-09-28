@@ -87,8 +87,10 @@ app.use('/api/views/delete/:id', viewsRouter);
 
 
 app.use('/api/sessions', sessionsRouter);
+
 //y sus rutas
 //rutas para la session
+
 
 app.get("/register", (req,res)=>{
   res.render('register');

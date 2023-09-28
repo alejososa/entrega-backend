@@ -3,7 +3,7 @@ import usersModel from "../db/models/users.model.js";
 import { Strategy as githubStrategy } from "passport-github2";
 import { Strategy as localStrategy } from "passport-local";
 import { usersManager } from "../managers/users/userManager.js";
-import { compareData } from "../utils.js";
+import { compareHashData, hashData } from "../utils.js";
 
 
 
@@ -19,7 +19,7 @@ passport.use('login', new localStrategy(
             if (!userDB) {
                 return done(null, false)
             }
-            const isPasswordValid = await compareData(password, userDB.password)
+            const isPasswordValid = await compareHashData(password, userDB.password)
             if (!isPasswordValid) {
                 return done(null, false)
             }
@@ -29,13 +29,40 @@ passport.use('login', new localStrategy(
         }
     }
 ))
+//local singup
+passport.use(
+    "localSignUp",
+    new localStrategy({
+        usernameField:"email",
+        passReqToCallback: true,
+    },
+    async(req, username, password, done)=>{
+        const {first_name, last_name}=req.body
+        if(!first_name || !last_name || !username ||!password||!age){
+            return done (null,false);
+        }
+        try {
+            const user = await usersManager.findUser(username)
+            if(user){
+            return done (null,false);
+            }
+            const hashPassword= await hashData(password)
+            const newUser ={...req.body, password:hashPassword}
+            const response= await usersManager.createOne(newUser)
+            done(null,response)
+        } catch (error) {
+            done (error)
+        }
+    })
+    );
+
 
 //github
 
 passport.use( new githubStrategy({
     clientID: 'Iv1.228b7835da6f6924',
     clientSecret: '6fe76744f0a8111fb272e46279d1fc7e89ed687c',
-    callbackURL: "https://localhost:8080/api/session/github"
+    callbackURL: "http://localhost:8080/api/session/github"
 },
     async function (accessToken, refreshToken, profile, done) {
         try {

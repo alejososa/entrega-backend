@@ -28,7 +28,7 @@ class CartsMongo {
         try {
             const cart = await cartsModels.findById(id)
             return cart
-            
+
         } catch (error) {
             return error
         }
@@ -36,16 +36,16 @@ class CartsMongo {
 
     async PopulatedCartById(_id) {
         try {
-          const cart = await cartsModels.findById(_id).populate('cart_products.product');
-          if (cart) {
-            return cart;
-          } else {
-            throw new Error('Carrito no encontrado');
-          }
+            const cart = await cartsModels.findById(_id).populate('cart_products.product');
+            if (cart) {
+                return cart;
+            } else {
+                throw new Error('Carrito no encontrado');
+            }
         } catch (error) {
-          throw new Error('Error al obtener el carrito: ' + error.message);
+            throw new Error('Error al obtener el carrito: ' + error.message);
         }
-      }
+    }
     //sumar producto al cart
     async addProductToCart(cartId, productId, quantity) {
         const cart = await this.findById(cartId);
