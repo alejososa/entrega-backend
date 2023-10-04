@@ -108,12 +108,25 @@ router.get("/githubSignup", passport.authenticate("github", { scope: ["user:emai
 );
 
 router.get("/github", passport.authenticate("github", {
-    failureMessage: "Cant log with github"
+    failureRedirect: "/login"
 }), (req, res) => {
     console.log(req.user);
     req.session["username"] = req.user.username;
-    res.send("prueba");
+    res.redirect("api/views/profile");
 }
 );
+
+//passport con google
+
+router.get('/auth/google',
+    passport.authenticate('google', { scope: ['user:email'] }));
+
+router.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        console.log(req.user);
+        req.session["username"] = req.user.username;
+        res.redirect("api/views/profile");
+    });
 
 export default router;

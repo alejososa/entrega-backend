@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 
+const JWT_secret_key= "hakunamatata"
+
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 
 
@@ -15,12 +17,8 @@ export  const hashData= async (data)=>{
 export const compareHashData= async (data, hashData)=>{
     return bcrypt.compare(data, hashData);
 }
-// export const compareData= async(data, hashData)=>{
-    
-//     console.log(data);
-//     console.log(hashData);
-//para cuando este hasheado
-//return bcrypt.compare(data, hashData)
 
-//return data===hashData
-//}
+export const generateToken = (user) =>{
+    const token= jwt.sign({user},JWT_secret_key,{expiresIn:60})
+return token
+}

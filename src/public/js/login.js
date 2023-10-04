@@ -11,7 +11,11 @@ form.addEventListener('submit', async (event) => {
 
     data.forEach((value, key) => obj[key] = value);
 
-    const response = await fetch('/api/sessions/login', {
+    //cambio estas lineas para indicar donde hacer el fetch
+
+
+    //const response = await fetch('/api/sessions/login', {
+    const response= await fetch("/api/jwt/login" , {
         method: 'POST',
         body: JSON.stringify(obj),
         headers: {
@@ -21,13 +25,13 @@ form.addEventListener('submit', async (event) => {
 
 
 
-   // const responseData = await response.json();
-   // console.log(responseData);
+     const responseData = await response.json();
+     console.log(responseData);
 
 
 
-    if (response.status === 200) {
+    if (responseData.status === "success") {
         window.location.replace('http://localhost:8080/api/views/profile')
     }
-    console.log("estamos aca");
+    
 });

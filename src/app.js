@@ -13,6 +13,7 @@ import { Message } from './db/models/messages.models.js';
 import { productsMongo } from './managers/products/ProductsMongo.js';
 import MongoStore from 'connect-mongo';
 import viewsRouter from "./routes/views.router.js";
+import jwtRouter from "./routes/jwt.router.js"
 import FileStore from 'session-file-store';
 import mongoose from 'mongoose';
 import { __dirname } from './utils.js';
@@ -24,19 +25,20 @@ const fileStorage = FileStore(session);
 
 
 //codigo del sessi
-app.use(session({
-  store: new MongoStore({
-    mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
-    ttl: 3600,
-  }),
-  secret: "secretSession",
-  resave: false,
-  saveUninitialized: false,
-}));
+
+// app.use(session({
+//   store: new MongoStore({
+//     mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
+//     ttl: 3600,
+//   }),
+//   secret: "secretSession",
+//   resave: false,
+//   saveUninitialized: false,
+// }));
 
 //passport
 app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.session())
 
 
 //handlebars
@@ -70,13 +72,6 @@ app.get("/guardarcookiefirmada", (req, res) => {
   res.cookie("cookienormal", "primera cookie", { signed: true }).send()
 })
 
-//sessions
-
-// app.use(session({
-//   secret:"secretSession",
-//   cookie:{maxAge:60000}
-// }))
-
 
 
 // Rutas
@@ -84,7 +79,7 @@ app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
 app.use('/api/views/delete/:id', viewsRouter);
-
+app.use('/api/jwt', jwtRouter);
 
 app.use('/api/sessions', sessionsRouter);
 
@@ -92,17 +87,17 @@ app.use('/api/sessions', sessionsRouter);
 //rutas para la session
 
 
-app.get("/register", (req,res)=>{
+app.get("/register", (req, res) => {
   res.render('register');
 });
 
-app.get('/login', (req,res)=>{
+app.get('/login', (req, res) => {
   res.render("login");
 });
 
-app.get('/profile',(req,res)=>{
-  res.render('profile',{
-      user:req.session.user
+app.get('/profile', (req, res) => {
+  res.render('profile', {
+    user: req.session.user
   });
 });
 
