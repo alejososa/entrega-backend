@@ -3,12 +3,13 @@ import usersModel from "../db/models/users.model.js";
 import { Strategy as githubStrategy } from "passport-github2";
 import { Strategy as localStrategy } from "passport-local";
 import { Strategy as googleStrategy } from "passport-google-oauth20";
+import { ExtractJwt, Strategy as current } from "passport-jwt";
 import { usersManager } from "../managers/users/userManager.js";
 import { compareHashData, hashData } from "../utils.js";
 
 
 
-
+const jwtSecretKey= "hakunamatata"
 
 
 //local 
@@ -95,42 +96,70 @@ passport.use(new githubStrategy({
 ))
 // passport con google
 
-passport.use(new googleStrategy({
-    clientID: '639480626800-qqd1d6ticnjeai86unkth0a8ivt83alr.apps.googleusercontent.com',
-    clientSecret: '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',
-    callbackURL: "http://localhost:8080/api/views/profile",
-    passReqToCallback: true,
+// passport.use(new googleStrategy({
+//     clientID: '639480626800-qqd1d6ticnjeai86unkth0a8ivt83alr.apps.googleusercontent.com',
+//     clientSecret: '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',
+//     callbackURL: "http://localhost:8080/api/views/profile",
+//     passReqToCallback: true,
     
-},
-    async function (accessToken, refreshToken, profile, done) {
-        try {
-            const userDB = await usersManager.findUser(profile.username)
-            //login
-            if (userDB) {
-                if (userDB.fromGoogle) {
-                    return done(null, userDB)
-                } else {
-                    return done(null, false)
-                }
-            }
-            // registro
-            const newUser = {
-                first_name: profile.displayName.split(' ')[0],
-                last_name: profile.displayName.split(' ')[1],
-                username: profile.username,
-                email: profile.email,
-                password: ' ',
-                fromGoogle: false
-            }
-            const result = await usersManager.create(newUser)
-            return done(null, result)
-        } catch (error) {
-            done(error)
-        }
-    }
-));
+// },
+//     async function (accessToken, refreshToken, profile, done) {
+//         try {
+//             const userDB = await usersManager.findUser(profile.username)
+//             //login
+//             if (userDB) {
+//                 if (userDB.fromGoogle) {
+//                     return done(null, userDB)
+//                 } else {
+//                     return done(null, false)
+//                 }
+//             }
+//             // registro
+//             const newUser = {
+//                 first_name: profile.displayName.split(' ')[0],
+//                 last_name: profile.displayName.split(' ')[1],
+//                 username: profile.username,
+//                 email: profile.email,
+//                 password: ' ',
+//                 fromGoogle: false
+//             }
+//             const result = await usersManager.create(newUser)
+//             return done(null, result)
+//         } catch (error) {
+//             done(error)
+//         }
+//     }
+// ));
 
 
+
+//with out cookies
+// passport.use('jwt',new current({
+//     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+//     secretOrKey: jwtSecretKey
+// },async(jwt_payload, done)=>{
+//     console.log('jwt_payload', jwt_payload);
+//     done(null,jwt_payload.user)
+
+// }))
+
+
+//with galletas
+
+const cookieExtractor= (req)=>{
+return req.cookies.token
+}
+
+
+
+passport.use('jwt',new current({
+    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+    secretOrKey: jwtSecretKey
+},async(jwt_payload, done)=>{
+    console.log('jwt_payload', jwt_payload);
+    done(null,jwt_payload.user)
+
+}))
 
 
 //user=>id
