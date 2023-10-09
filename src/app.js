@@ -19,7 +19,7 @@ import mongoose from 'mongoose';
 import { __dirname } from './utils.js';
 import passport from 'passport';
 import './passport/passportStrategies.js'
-
+import userRouter from "./routes/user.router.js"
 const app = express();
 const fileStorage = FileStore(session);
 
@@ -80,8 +80,10 @@ app.use('/api/carts', cartRouter);
 app.use('/api/views', viewsRouter);
 app.use('/api/views/delete/:id', viewsRouter);
 app.use('/api/jwt', jwtRouter);
-
 app.use('/api/sessions', sessionsRouter);
+
+//autentication
+app.use('/api/autentication', userRouter)
 
 //y sus rutas
 //rutas para la session

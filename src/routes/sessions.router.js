@@ -1,3 +1,6 @@
+// este session.router es elq ue el profe farid llamo autentication en sus clases
+
+
 import { Router } from "express";
 import userModel from "../db/models/users.model.js";
 import passport from "passport";

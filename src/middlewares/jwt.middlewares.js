@@ -20,7 +20,7 @@ const jwtSecretKey= "hakunamatata"
 
 
 //con cookies
-export const jwtValidation= (req,res,next)=>{
+export  const jwtValidation= (req,res,next)=>{
     try {
         const token= req.cookies.token
         const response= jwt.verify(token,jwtSecretKey)
