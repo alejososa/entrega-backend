@@ -23,8 +23,8 @@ class UsersControllers{
     }
 
     async createUser(req,res){
-        const{first_name, last_name, email, age, password}= req.body;
-        if(!first_name || !last_name || !email || !age || !password){
+        const{first_name, last_name, email, password}= req.body;
+        if(!first_name || !last_name || !email || !password){
             return res.status(400).json({message:"Some data is missing"});
         }
         try {

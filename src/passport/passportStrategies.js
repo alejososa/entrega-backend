@@ -40,7 +40,7 @@ passport.use(
     },
         async (req, username, password, done) => {
             const { first_name, last_name } = req.body
-            if (!first_name || !last_name || !username || !password || !age) {
+            if (!first_name || !last_name || !username || !password) {
                 return done(null, false);
             }
             try {
