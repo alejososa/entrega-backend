@@ -1,8 +1,8 @@
 import { Router } from "express";
 //import productManager from "../managers/products/ProductManager.js";
-import { productsMongo } from "../managers/products/ProductsMongo.js";
-import { productsModels } from "../db/models/products.model.js";
-import { cartsMongo } from "../managers/carts/CartsMongo.js";
+import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js";
+import { productsModels } from "../persistencia/db/models/products.model.js";
+import { cartsMongo } from "../persistencia/DAOs/managers/carts/CartsMongo.js";
 
 const router = Router();
 

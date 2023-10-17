@@ -1,5 +1,5 @@
 import { Router} from "express";
-import { usersManager } from "../managers/users/userManager.js";
+import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {jwtValidation} from "../middlewares/jwt.middlewares.js"
 const router = Router()

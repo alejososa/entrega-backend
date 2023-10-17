@@ -7,10 +7,10 @@ import cartRouter from './routes/cart.router.js';
 import handlebars from 'express-handlebars';
 import sessionsRouter from "./routes/sessions.router.js";
 import { Server } from 'socket.io';
-import "./db/dbConfig.js";
+import "./persistencia/db/dbConfig.js";
 //import productManager from './managers/products/ProductManager.js';
-import { Message } from './db/models/messages.models.js';
-import { productsMongo } from './managers/products/ProductsMongo.js';
+import { Message } from './persistencia/db/models/messages.models.js';
+import { productsMongo } from './persistencia/DAOs/managers/products/ProductsMongo.js';
 import MongoStore from 'connect-mongo';
 import viewsRouter from "./routes/views.router.js";
 import jwtRouter from "./routes/jwt.router.js"

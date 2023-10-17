@@ -2,7 +2,7 @@ import { Router } from "express";
 //descomentar para que funcione en fs
 //import productManager from "../ProductManager.js";
 //descomentar para que funcione mongoose
-import {productsMongo} from "../managers/products/ProductsMongo.js";
+import {productsMongo} from "../persistencia/DAOs/managers/products/ProductsMongo.js";
 
 
 

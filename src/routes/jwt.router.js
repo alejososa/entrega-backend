@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { usersManager } from "../managers/users/userManager.js";
+import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
 import { generateToken, compareHashData } from "../utils.js";
 import { jwtValidation } from "../middlewares/jwt.middlewares.js"
 import passport from "passport";

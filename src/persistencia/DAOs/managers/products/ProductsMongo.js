@@ -1,4 +1,4 @@
-import { productsModels } from "../../db/models/products.model.js";
+import { productsModels } from "../../../db/models/products.model.js";
 
 class ProductsMongo {
   async findAllViews() {

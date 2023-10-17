@@ -1,4 +1,4 @@
-import { cartsModels } from '../../db/models/carts.models.js';
+import { cartsModels } from '../../../db/models/carts.models.js';
 
 class CartsMongo {
     //crear carrito con nombre y arrays de productos vacio

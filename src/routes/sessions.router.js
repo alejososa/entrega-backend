@@ -2,9 +2,9 @@
 
 
 import { Router } from "express";
-import userModel from "../db/models/users.model.js";
+import userModel from "../persistencia/db/models/users.model.js";
 import passport from "passport";
-import { usersManager } from "../managers/users/userManager.js";
+import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
 import { compareHashData } from "../utils.js";
 import { hashData } from "../utils.js";
 

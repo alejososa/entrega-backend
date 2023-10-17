@@ -1,7 +1,7 @@
 import { Router } from "express"
 //comiteado para usar mongoose
 //import cartManager from "../CartManager.js";
-import {cartsMongo} from "../managers/carts/CartsMongo.js";
+import {cartsMongo} from "../persistencia/DAOs/managers/carts/CartsMongo.js";
 
 
 const router = Router();

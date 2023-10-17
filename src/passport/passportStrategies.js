@@ -1,10 +1,10 @@
 import passport from "passport";
-import usersModel from "../db/models/users.model.js";
+import usersModel from "../persistencia/db/models/users.model.js";
 import { Strategy as githubStrategy } from "passport-github2";
 import { Strategy as localStrategy } from "passport-local";
 import { Strategy as googleStrategy } from "passport-google-oauth20";
 import { ExtractJwt, Strategy as current } from "passport-jwt";
-import { usersManager } from "../managers/users/userManager.js";
+import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
 import { compareHashData, hashData } from "../utils.js";
 
 
