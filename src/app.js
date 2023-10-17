@@ -20,8 +20,12 @@ import { __dirname } from './utils.js';
 import passport from 'passport';
 import './passport/passportStrategies.js'
 import userRouter from "./routes/user.router.js"
+import config from "./config.js"
+
+
 const app = express();
 const fileStorage = FileStore(session);
+
 
 
 //codigo del sessi
@@ -114,7 +118,7 @@ app.get('/chat', async (req, res) => {
 
 
 
-const PORT = 8080;
+const PORT = config.port;
 
 const httpServer = app.listen(PORT, () => {
   console.log(`Escuchando al puerto ${PORT}`)
