@@ -22,8 +22,8 @@ class ProductsControllers{
     }
 
     async createOne(req,res){
-        const{product_title, product_description, product_price, product_code, product_stock, product_category, product_thumbanail}= req.body;
-        if(!product_title|| !product_description|| !product_price || !product_code ||!product_stock || !product_category || !product_thumbanail){
+        const{product_title, product_description, product_price, product_code, product_stock, product_category, product_thumbnail}= req.body;
+        if(!product_title|| !product_description|| !product_price || !product_code ||!product_stock || !product_category || !product_thumbnail){
             return res.status(400).json({message:"Product data is missing"});
         }
         try {
