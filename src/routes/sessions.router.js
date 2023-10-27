@@ -88,14 +88,14 @@ router.post("/login", async (req, res) => {
 
 
     req.session.user = {
-        name: `${userDB.first_name} ${userDB.last_name}`,
+        name: `${userDB.first_name} ${userDB.last_name}`,       
         email: userDB.email,
         username: username,
 
     }
 
     res.status(200).json({ message: 'Session created', user: userDB })
-
+    
 })
 
 router.get('/logout', (req, res) => {

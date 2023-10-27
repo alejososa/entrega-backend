@@ -49,6 +49,7 @@ router.post("/login", async (req, res) => {
         const token = generateToken(userDB)
         res.status(200).cookie("token", token).json({ message: "token generated" })
         console.log(token);
+        
     } catch (error) {
         res.status(500).json({ message: error })
     }

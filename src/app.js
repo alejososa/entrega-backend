@@ -30,19 +30,19 @@ const fileStorage = FileStore(session);
 
 //codigo del sessi
 
-// app.use(session({
-//   store: new MongoStore({
-//     mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
-//     ttl: 3600,
-//   }),
-//   secret: "secretSession",
-//   resave: false,
-//   saveUninitialized: false,
-// }));
+ app.use(session({
+   store: new MongoStore({
+     mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
+     ttl: 3600,
+   }),
+   secret: "secretSession",
+   resave: false,
+   saveUninitialized: false,
+ }));
 
 //passport
 app.use(passport.initialize())
-// app.use(passport.session())
+ app.use(passport.session())
 
 
 //handlebars
