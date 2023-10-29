@@ -102,6 +102,13 @@ class CartsMongo {
         //     return error
         // }
     }
+
+    async clearCart(cid) {
+        const cart = await this.getCartsById(cid);
+        cart.products = [];
+        await this.saveCarts(cart);
+        return cart;
+    };
 }
 
 export const cartsMongo = new CartsMongo()

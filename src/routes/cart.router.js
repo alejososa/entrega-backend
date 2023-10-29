@@ -2,7 +2,10 @@ import { Router } from "express"
 //comiteado para usar mongoose
 //import cartManager from "../CartManager.js";
 import {cartsMongo} from "../persistencia/DAOs/managers/carts/CartsMongo.js";
-
+import {productsMongo} from "../persistencia/DAOs/managers/products/ProductsMongo.js"
+import { cartService } from "../services/carts.services.js";
+import { productService } from "../services/products.services.js";
+import { ticketServices } from "../services/ticket.services.js";
 
 const router = Router();
 
@@ -90,6 +93,39 @@ router.delete('/:cartId/products/:productId', async(req,res)=>{
     }
 })
 
+//para la compra
+
+router.post('/:cartId/purchase', async (req,res)=>{
+    const cartId= req.params.cartId;
+    try {
+        const cartId = await cartService.findById(cartId);
+        if(!cartId){
+            return res.status(400).json({error:"cart not founded"});
+        }
+        for (const productsOnCart of cart.products){
+const product = await productService.findById(productsOnCart.products);
+if(!product){
+    return res.status(400).json({error:"Product not founded"})
+}
+if(productsOnCart.quantity > product.stock){
+    return  res.status(400).json({error:"No stock"})
+}
+product.stock =productsOnCart.quantity;
+await product.save();
+        }
+const purchaseTicket ={
+    code: await generateUniqueCode(),
+    purchase_datetime: new Date(),
+    amount: cart.totalAmount,
+    purchaser:"comprador"
+}
+const ticket =await ticketServices.createTickets(purchaseTicket);
+await cartService.createCart(cartId);
+res.status(200).json({message:"Purchase completed, your ticket", ticket})
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
 
 
 export default router;
