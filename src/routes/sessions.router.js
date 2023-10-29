@@ -23,21 +23,23 @@ router.get("/login", async (req, res) => {
     // //req.session["password"]=password
     // console.log(req);
     // res.send("probando session")
-    const { username, password } = req.body
-    if (!username || !password) {
-        return res.status(400).json({ message: 'alguna data is missing' })
-    }
-    const userDB = await usersManager.findUser(username)
-    if (!userDB) {
-        return res.status(400).json({ message: 'Signup first' })
-    }
-    const isPasswordValid = await compareHashData(password, userDB.password)
-    if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Username or Password not valid' })
-    }
 
-    req.session['username'] = username
-    res.status(200).json({ message: 'Session created', user: userDB })
+    
+    // const { username, password } = req.body
+    // if (!username || !password) {
+    //     return res.status(400).json({ message: 'alguna data is missing' })
+    // }
+    // const userDB = await usersManager.findUser(username)
+    // if (!userDB) {
+    //     return res.status(400).json({ message: 'Signup first' })
+    // }
+    // const isPasswordValid = await compareHashData(password, userDB.password)
+    // if (!isPasswordValid) {
+    //     return res.status(401).json({ message: 'Username or Password not valid' })
+    // }
+
+    // req.session['username'] = username
+    // res.status(200).json({ message: 'Session created', user: userDB })
 })
 
 
