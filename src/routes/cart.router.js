@@ -45,14 +45,15 @@ router.get('/', async (req,res)=>{
 });
 // Ruta para obtener un carrito por su ID
 router.get('/:id', async (req, res) => {
-    const cartId = req.params.id
+    const cartId = req.params
     try {
         //const cart = await cartManager.getCartById(+cartId);
-        const cart = await cartsMongo.PopulatedCartById(cartId)
-        res.json(cart.products)
+        const cart = await cartsMongo.findById(cartId)
+        //res.json(cart.products)
         res.status(200).json({message:"cart founded", cart})
     } catch (err) {
         res.status(500).json({message:"cart not founded"})
+        
     }
 });
 //ruta para borrar carrito
@@ -95,10 +96,10 @@ router.delete('/:cartId/products/:productId', async(req,res)=>{
 
 //para la compra
 
-router.post('/:cartId/purchase', async (req,res)=>{
-    const cartId= req.params.cartId;
+router.post('/:id/purchase', async (req,res)=>{
+    const cartId= req.params
     try {
-        const cartId = await cartService.findById(cartId);
+        const cart = await cartService.findById(cartId);
         if(!cartId){
             return res.status(400).json({error:"cart not founded"});
         }

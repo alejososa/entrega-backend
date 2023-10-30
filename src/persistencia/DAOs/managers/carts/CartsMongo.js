@@ -50,12 +50,12 @@ class CartsMongo {
     async addProductToCart(cartId, productId, quantity) {
         const cart = await this.findById(cartId);
 
-        const existingProductIndex = cart.cart_products.findIndex((p) => p.product_id === productId);
+        const existingProductIndex = cart.products.findIndex((p) => p.product_id === productId);
 
         if (existingProductIndex !== -1) {
-            cart.cart_products[existingProductIndex].quantity += quantity || 1;
+            cart.products[existingProductIndex].quantity += quantity || 1;
         } else {
-            cart.cart_products.push({ product_id: productId, quantity: quantity || 1 });
+            cart.products.push({ product_id: productId, quantity: quantity || 1 });
         }
 
         try {
@@ -63,7 +63,7 @@ class CartsMongo {
             console.log(`Cart Updated ${cartId}`);
             return cart;
         } catch (error) {
-            throw new Error('Can\'t update cart: ' + error.message);
+            throw new Error('Cant update cart: ' + error.message);
         }
     }
     //delete one cart by id    
