@@ -6,7 +6,7 @@ import {productsMongo} from "../persistencia/DAOs/managers/products/ProductsMong
 import { cartService } from "../services/carts.services.js";
 import { productService } from "../services/products.services.js";
 import { ticketServices } from "../services/ticket.services.js";
-
+import { generateUniqueCode } from "../codeGenerator.js";
 const router = Router();
 
 
@@ -103,17 +103,25 @@ router.post('/:id/purchase', async (req,res)=>{
         if(!cartId){
             return res.status(400).json({error:"cart not founded"});
         }
-        for (const productsOnCart of cart.products){
-const product = await productService.findById(productsOnCart.products);
-if(!product){
-    return res.status(400).json({error:"Product not founded"})
-}
-if(productsOnCart.quantity > product.stock){
+        
+        if (typeof cart.products === 'object' && cart.products !== null) {
+            // Convierte los valores de las propiedades del objeto en un arreglo
+            const productIds = Object.values(cart.products);
+        
+
+        for (const productId of productIds) {
+            const product = await productService.findById(productId);
+            
+            if (!product) {
+                return res.status(400).json({ error: "Product not found" });
+            }
+if(productId.quantity > product.stock){
     return  res.status(400).json({error:"No stock"})
 }
-product.stock =productsOnCart.quantity;
+product.stock =productId.quantity;
 await product.save();
         }
+    }
 const purchaseTicket ={
     code: await generateUniqueCode(),
     purchase_datetime: new Date(),
