@@ -8,4 +8,4 @@ async createTicket(ticket){
 }
 }
 
-export default TicketManager;
+export  {TicketManager};

@@ -22,6 +22,9 @@ class CartsMongo {
         }
     }
 
+    async saveCart(cart) {
+        await cart.save();
+    }
 
     //buscar carrrito por id
     async findById(id) {
@@ -109,6 +112,8 @@ class CartsMongo {
         await this.saveCarts(cart);
         return cart;
     };
+
+
 }
 
 export const cartsMongo = new CartsMongo()

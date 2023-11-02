@@ -3,7 +3,7 @@ import { Router } from "express"
 //import cartManager from "../CartManager.js";
 import {cartsMongo} from "../persistencia/DAOs/managers/carts/CartsMongo.js";
 import {productsMongo} from "../persistencia/DAOs/managers/products/ProductsMongo.js"
-import { cartService } from "../services/carts.services.js";
+import  {cartService}  from "../services/carts.services.js";
 import { productService } from "../services/products.services.js";
 import { ticketServices } from "../services/ticket.services.js";
 import { generateUniqueCode } from "../codeGenerator.js";
@@ -101,9 +101,10 @@ router.post('/:id/purchase', async (req,res)=>{
     try {
         const cart = await cartService.findById(cartId);
         if(!cartId){
-            return res.status(400).json({error:"cart not founded"});
+            return res.status(400).json({error:"cart not found"});
         }
-        
+       
+
         if (typeof cart.products === 'object' && cart.products !== null) {
             // Convierte los valores de las propiedades del objeto en un arreglo
             const productIds = Object.values(cart.products);
@@ -121,14 +122,15 @@ if(productId.quantity > product.stock){
 product.stock =productId.quantity;
 await product.save();
         }
-    }
-const purchaseTicket ={
-    code: await generateUniqueCode(),
-    purchase_datetime: new Date(),
-    amount: cart.totalAmount,
-    purchaser:"comprador"
-}
-const ticket =await ticketServices.createTickets(purchaseTicket);
+        }
+        const purchaseTicket ={
+            code: await generateUniqueCode(),
+            purchase_datetime: new Date(),
+            //falta solucionar la ruta para la cantidad
+            amount: 7,
+            purchaser: "comprador"
+        }
+        const ticket =await ticketServices.createTickets(purchaseTicket);
 await cartService.createCart(cartId);
 res.status(200).json({message:"Purchase completed, your ticket", ticket})
     } catch (error) {
