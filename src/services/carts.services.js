@@ -37,49 +37,40 @@ class CartService {
         return cart;
     };
 
-    async totalAmount(cart) {
+
+    async calculateTotalAmount(cart) {
         try {
+
             if (!cart) {
+
                 throw new Error('Carrito no encontrado');
             }
+            if (!Array.isArray(cart.products) || cart.products.length === 0) {
 
-            // let totalAmount = 0;
-
-            // for (const productInfo of cart.products) {
-            //     const product = await productService.findById(productInfo.product);
-            //     if (product) {
-            //         totalAmount += product.price * productInfo.quantity;
-            //     }
-            // }
-
-            //hacemos que cart.product sea iterable
-let totalAmount=0;
-            if (typeof cart.products === 'object' && cart.products !== null) {
-                // Convierte los valores de las propiedades del objeto en un arreglo
-                const productIds = Object.values(cart.products);
-
-                 
-
-                for (const productId of productIds) {
-                    const product = await productService.findById(productId);
-                    
-                    if (!product) {
-                        return res.status(400).json({ error: "Product not found" });
-                    }
-                    if (product) {
-                    cart.totalAmount = productId.price * productId.quantity;
-                    }
-                }
-
+                throw new Error('Carrito sin productos');
             }
+            let totalAmount = 0;
 
+
+            for (const productInfo of cart.products) {
+                console.log("Iterando dentro del bucle");
+                console.log("productInfo.product:", productInfo);
+                const product = await productService.findById(productInfo);
+
+
+                if (product !== null) {
+
+                    totalAmount += productInfo.price * productInfo.quantity;
+
+                }
+            }
+            
+            console.log("saliendo del bucle");
             cart.totalAmount = totalAmount;
-            await cartsMongo.saveCart(cart)
+            await cartsMongo.saveCart(cart);
 
             return cart;
-
-
-
+            
         } catch (error) {
             throw new Error('Error al calcular el total: ' + error.message);
         }
