@@ -7,6 +7,7 @@ import  {cartService}  from "../services/carts.services.js";
 import { productService } from "../services/products.services.js";
 import { ticketServices } from "../services/ticket.services.js";
 import { generateUniqueCode } from "../codeGenerator.js";
+import { productsModels } from "../persistencia/db/models/products.model.js";
 const router = Router();
 
 
@@ -97,7 +98,7 @@ router.delete('/:cartId/products/:productId', async(req,res)=>{
 //para la compra
 
 router.post('/:id/purchase', async (req,res)=>{
-    const cartId= req.params
+    const cartId= req.params.id
     try {
         const cart = await cartService.findById(cartId);
         if(!cartId){
@@ -118,16 +119,20 @@ router.post('/:id/purchase', async (req,res)=>{
             }
 if(productId.quantity > product.stock){
     return  res.status(400).json({error:"No stock"})
+}else{
+product.stock -=productId.quantity;
+
 }
-product.stock =productId.quantity;
-await product.save();
         }
         }
+
+         await cartService.totalAmount(cart);
+
         const purchaseTicket ={
             code: await generateUniqueCode(),
             purchase_datetime: new Date(),
             //falta solucionar la ruta para la cantidad
-            amount: 7,
+            amount: cart.totalAmount,
             purchaser: "comprador"
         }
         const ticket =await ticketServices.createTickets(purchaseTicket);

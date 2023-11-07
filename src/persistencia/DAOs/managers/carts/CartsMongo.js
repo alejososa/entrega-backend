@@ -39,7 +39,7 @@ class CartsMongo {
 
     async PopulatedCartById(_id) {
         try {
-            const cart = await cartsModels.findById(_id).populate('cart_products.product');
+            const cart = await cartsModels.findById(_id).populate('products.product');
             if (cart) {
                 return cart;
             } else {

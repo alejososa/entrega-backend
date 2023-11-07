@@ -37,9 +37,56 @@ class CartService {
         return cart;
     };
 
+    async totalAmount(cart) {
+        try {
+            if (!cart) {
+                throw new Error('Carrito no encontrado');
+            }
+
+            // let totalAmount = 0;
+
+            // for (const productInfo of cart.products) {
+            //     const product = await productService.findById(productInfo.product);
+            //     if (product) {
+            //         totalAmount += product.price * productInfo.quantity;
+            //     }
+            // }
+
+            //hacemos que cart.product sea iterable
+let totalAmount=0;
+            if (typeof cart.products === 'object' && cart.products !== null) {
+                // Convierte los valores de las propiedades del objeto en un arreglo
+                const productIds = Object.values(cart.products);
+
+                 
+
+                for (const productId of productIds) {
+                    const product = await productService.findById(productId);
+                    
+                    if (!product) {
+                        return res.status(400).json({ error: "Product not found" });
+                    }
+                    if (product) {
+                    cart.totalAmount = productId.price * productId.quantity;
+                    }
+                }
+
+            }
+
+            cart.totalAmount = totalAmount;
+            await cartsMongo.saveCart(cart)
+
+            return cart;
 
 
+
+        } catch (error) {
+            throw new Error('Error al calcular el total: ' + error.message);
+        }
+    }
 }
+
+
 
 export const cartService = new CartService();
 
