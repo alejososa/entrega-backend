@@ -1,5 +1,7 @@
 
 import { cartsMongo } from "../persistencia/DAOs/managers/carts/CartsMongo.js";
+import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js";
+import { productsModels } from "../persistencia/db/models/products.model.js";
 import { productService } from "./products.services.js";
 
 
@@ -60,7 +62,7 @@ class CartService {
 
                 if (product !== null) {
 
-                    totalAmount += productInfo.price * productInfo.quantity;
+                    totalAmount += productInfo.quantity;
 
                 }
             }

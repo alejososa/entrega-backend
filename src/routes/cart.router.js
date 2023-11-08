@@ -128,13 +128,13 @@ router.post('/:id/purchase', async (req, res) => {
             }
         }
 
-        await cartService.calculateTotalAmount(cart);
+         await cartService.calculateTotalAmount(cart);
 
         const purchaseTicket = {
             code: await generateUniqueCode(),
             purchase_datetime: new Date(),
             //falta solucionar la ruta para la cantidad
-            amount: cart.totalAmount,
+            amount:  cart.totalAmount,
             purchaser: "comprador"
         }
         const ticket = await ticketServices.createTickets(purchaseTicket);
