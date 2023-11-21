@@ -121,7 +121,7 @@ router.post('/:id/purchase', async (req, res) => {
                 if (productInfo.quantity > product.stock) {
                     return res.status(400).json({ error: "No stock" })
                 } else {
-                    console.log("aca");
+                    
                     product.stock -= productInfo.quantity;
 
                 }

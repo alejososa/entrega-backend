@@ -53,21 +53,20 @@ class CartService {
             }
             let totalAmount = 0;
 
-
+            
             for (const productInfo of cart.products) {
-                console.log("Iterando dentro del bucle");
-                console.log("productInfo.product:", productInfo);
+                
+                
                 const product = await productService.findById(productInfo);
-
-
+                
                 if (product !== null) {
-
-                    totalAmount += productInfo.quantity;
+                    
+                    totalAmount += productInfo.quantity  ;
 
                 }
             }
             
-            console.log("saliendo del bucle");
+            
             cart.totalAmount = totalAmount;
             await cartsMongo.saveCart(cart);
 
