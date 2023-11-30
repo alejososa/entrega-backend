@@ -102,7 +102,7 @@ router.get('/aggregation', async (req,res)=>{
 
 
 router.get("/", productsControllers.findAll);
-router.get("/:productid", productsControllers.findOne);
+router.get("/:productid", productsControllers.getProductById);
 router.post("/", productsControllers.createOne);
 router.delete("/:productid", productsControllers.deleteOne);
 

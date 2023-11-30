@@ -10,9 +10,6 @@ class ProductServices{
 
     async findById(id){
         const response = await productsMongo.findById(id);
-        if(!response){
-            throw new error("Product id doesnt exist")
-        }
         return response
     }
     async createOne(obj){

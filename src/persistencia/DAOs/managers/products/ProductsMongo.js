@@ -46,12 +46,7 @@ class ProductsMongo {
   }
 
   async findById(id) {
-    try {
-      const product = await productsModels.findById(id);
-      return product;
-    } catch (error) {
-      return error;
-    }
+    return await productsModels.findById(id);
   }
 
   async updateOne(id, obj) {
