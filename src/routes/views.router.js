@@ -1,80 +1,67 @@
-import { Router } from "express";
-//import productManager from "../managers/products/ProductManager.js";
-import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js";
-import { productsModels } from "../persistencia/db/models/products.model.js";
-import { cartsMongo } from "../persistencia/DAOs/managers/carts/CartsMongo.js";
+import {Router} from "express";
+import { ProductManagerMongo } from "../persistencia/DAOs/managers/products/productManagerMongo.js";
 
-const router = Router();
+const pm = new ProductManagerMongo();
+const viewRouter = Router()
 
-//listado de productos renderizados desde "home"
-router.get("/", async (req, res) => {
-  try {
-    const response = await productsMongo.findAll(req.query);
-    res.render("home", response);
-  } catch (error) {
-    res.status(500).json({ error: "Cant obtain product list" });
-  }
+// Vista Home 
+viewRouter.get("/", async (req, res) => {
+    try {
+        const products = await pm.getProducts();
+        res.render("products", {products})
+    } catch (error) {
+        res.status(500).json({error: "Cant show product list"});
+    }
 });
 
-router.get("/realTimeProducts", async (req, res) => {
-  try {
-    const products = await productsMongo.findAllViews();
-    //const productsJSON = JSON.stringify(products);
-    res.render("realTimeProducts", { products });
-  } catch (error) {
-    res.status(500).json({ error: "Cant obtain products list" });
-  }
+// Vista Products (/api/views/products)
+viewRouter.get("/products", async (req, res) => {
+    try {
+        const products = await pm.getProducts();
+        res.render("products", {products, user: req.session.passport.user});
+    } catch (error) {
+        res.status(500).json({error: "Cant show products list"});
+    }
 });
 
-router.get("/products", async (req, res) => {
-
-  try {
-    const response = await productsMongo.findAll(req.query);
-    console.log(response)
-    res.render("products", response);
-  } catch (error) {
-    res.status(500).json({ error: "Cant obtain products list" });
-  }
-
+// Vista RealTimeProducts (/api/views/realtimeproducts)
+viewRouter.get("/realtimeproducts", async (req, res) => {
+    try {
+        const products = await pm.getProducts();
+        res.render("realTimeProducts", {products});
+    } catch (error) {
+        res.status(500).json({error: "Cant get products list"});
+    }
 });
 
-// router.get("/profile", async(req,res)=>{
-//   try {
-//     const response =await productsMongo.findAll(req.query);
-//     console.log(response);
-//     res.render("profile", response);
-//   } catch (error){
-//     res.status(500).json({error:"cant obtain products list"});
-//   }
-// })
+// Login, Register y Profile
+const publicAccess = (req, res, next) => {
+    if (req.session.user) return res.redirect("/profile");
+    next();
+};
 
-router.get("/carts/:id", async (req, res) => {
-  const cartId = req.params.id
-  try {
-    const response = await cartsMongo.findById(cartId)
-    console.log(response);
-    res.render("carts", response)
-  } catch (error) {
-    res.status(500).json({ error: "there is no cart with that id" });
+const privateAccess = (req, res, next) => {
+    if (!req.session.user) return res.redirect("/login");
+    next();
+};
 
-  }
-})
+viewRouter.get("/register", publicAccess, (req, res) => {
+    res.render("register")
+});
 
-//rutas para la session
+viewRouter.get("/login", publicAccess, (req, res) => {
+    res.render("login")
+});
 
-router.get("/register", (req, res) => {
-  res.render('register');
-})
+viewRouter.get("/profile", privateAccess, (req, res) => {
+    res.render("profile", {
+        user: req.session.user,
+    })
+});
 
-router.get('/login', (req, res) => {
-  res.render("login");
-})
+// Email
+viewRouter.get("/email", (req, res) => {
+    res.render("Mail");
+});
 
-router.get('/profile',(req, res) => {
-  
-  res.render('profile', {user: req.session.user});
-
-})
-
-
-export default router;
+export default viewRouter;

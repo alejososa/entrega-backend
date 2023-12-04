@@ -1,31 +1,33 @@
-import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js";
-import ProductDto from "../persistencia/DTOs/products.dto.js";
+import { ProductManagerMongo } from "../persistencia/DAOs/managers/products/productManagerMongo.js";
 
-class ProductServices{
+class ProductsService {
+    constructor() {
+        this.productsManager = new ProductManagerMongo();
+    };
+    async addProducts(product) {
+        const newProduct = await this.productsManager.addProducts(product);
+        return newProduct;
+    };
 
-    async findAll(obj){
-        const response = await productsMongo.findAll(obj);
-        return response
-    }
+    async getProducts(queryOptions = {}, sortOptions = {}, limit = 10, page = 1) {
+        const products = await this.productsManager.getProducts(queryOptions, sortOptions, limit, page);
+        return products;
+    };
 
-    async findById(id){
-        const response = await productsMongo.findById(id);
-        return response
-    }
-    async createOne(obj){
-        const productDto= new ProductDto({...obj});
-        const response = await productsMongo.createOne(productDto);
-        return response
-    }
-    //preguntar por este
-    async updateOne(obj){
+    async getProductsById(pid) {
+        const product = await this.productsManager.getProductsById(pid);
+        return product;
+    };
 
-    }
+    async updateProducts(pid, updatedProducts) {
+        const updateProducts = await this.productsManager.updateProducts(pid, updatedProducts);
+        return updateProducts;
+    };
 
-    async deleteOne(id){
-        const deletedProduct= await productsMongo.deleteOne(id);
-        return deletedProduct;
-    }
-}
+    async deleteProducts(pid) {
+        const deletedProducts = await this.productsManager.deleteProducts(pid);
+        return deletedProducts;
+    };
+};
 
-export const productService= new ProductServices();
+export const productsService = new ProductsService();

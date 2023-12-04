@@ -1,137 +1,92 @@
 // este session.router es elq ue el profe farid llamo autentication en sus clases
 
 
-import { Router } from "express";
+import Router from "express";
 import userModel from "../persistencia/db/models/users.model.js";
+import { compareHashData, hashData } from "../utils.js";
 import passport from "passport";
-import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
-import { compareHashData } from "../utils.js";
-import { hashData } from "../utils.js";
+import UsersDto from "../persistencia/DTOs/user.dtos.js";
 
-const router = Router();
+const sessionsRouter = Router();
 
+sessionsRouter.post("/register", async (req, res) => {
+    const { first_name, last_name, username, email, password } = req.body;
+    // Hash Password
+    const hashPassword = await hashData(password);
+    const exist = await userModel.findOne({ email });
+    if (exist) {
+        return res.status(400).send({ status: "error", error: "User already exists" });
+    }
+    const user = {
+        first_name, last_name, email, password: hashPassword
+    };
+    const result = await userModel.create(user);
+    res.send({ status: "success", message: "Succesfully registered" });
+});
 
-
-router.get("/login", async (req, res) => {
-    // const { username, password } = req.body;
-    // if (!username || !password) {
-    //     return res.status(400).json({ message: "complete all fields" })
-    // }
-
-    // req.session["username"] = username
-    // //por cuestiones de seguridad no se guarda el password en las session
-    // //req.session["password"]=password
-    // console.log(req);
-    // res.send("probando session")
-
+sessionsRouter.post('/login', async (req, res) => {
+    const { email, password } = req.body;
     
-    // const { username, password } = req.body
-    // if (!username || !password) {
-    //     return res.status(400).json({ message: 'alguna data is missing' })
-    // }
-    // const userDB = await usersManager.findUser(username)
-    // if (!userDB) {
-    //     return res.status(400).json({ message: 'Signup first' })
-    // }
-    // const isPasswordValid = await compareHashData(password, userDB.password)
-    // if (!isPasswordValid) {
-    //     return res.status(401).json({ message: 'Username or Password not valid' })
-    // }
-
-    // req.session['username'] = username
-    // res.status(200).json({ message: 'Session created', user: userDB })
-})
-
-
-router.post('/register', async (req, res) => {
-    const { first_name, last_name, email, username, password } = req.body;
-    //chequeamos que haya llenado todos los datos
-    if (!first_name || !last_name || !username || !password) {
-        return res.status(400).json({ message: "Some data is missing" });
-    }
-    //chequeamos que se pueda usar el username
-    const userDB = await usersManager.findUser(username);
-    if (userDB) {
-        return res.status(400).json({ message: "Username already used" });
-    }
-
-    // const user = { first_name, last_name, email, username, password }
-    // const result = await usersManager.create(user);
-    // res.send({ status: "success", payload: result, message: "user registered" });
-    try {
-        const hashPassword = await hashData(password)
-        const newUser = { ...req.body, password: hashPassword }
-        const response = await usersManager.create(newUser);
-        res.status(200).json({ status: "success", payload: response, message: "User created" })
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-})
-
-
-
-router.post("/login", async (req, res) => {
-    const { username, password } = req.body
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Some data is missing' })
-    }
-    //1!!!! buscar usuario
-    const userDB = await usersManager.findUser(username)
-    if (!userDB) {
-        return res.status(400).json({ message: 'User is not registered' })
-    }
-    //chequeamos el password
-    const isPasswordValid = await compareHashData(password, userDB.password)
-
+    
+    const user = await userModel.findOne({ email });
+    if (!user)
+        return res.status(400).send({
+            status: "error",
+            error: "Invalid data",
+        });
+    // compara contraseña en caso de existir el usuario
+    const isPasswordValid = await compareHashData(password, user.password);
+    
     if (!isPasswordValid) {
-
-        return res.status(401).json({ message: 'Username or Password not valid' })
+        return res.status(401).json({ message: "User or password not valid" });
     }
-
-
-    req.session.user = {
-        name: `${userDB.first_name} ${userDB.last_name}`,       
-        email: userDB.email,
-        username: username,
-
+    // Si esta todo piola
+    req.session.passport = {
+        user: {
+            first_name: user.first_name,
+            last_name: user.last_name,
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+        }
+    };
+    if (!user) {
+        return res.status(400).send({ status: "error", error: "Invalid data" })
     }
+    // Validacion para ADMIN
+    if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
+        user.role = "ADMIN";
+    }
+    req.session.passport.user = {
+        _id: user._id,
+        name: `${user.first_name}${user.last_name}`,
+        email: user.email,
+        age: user.age,
+        role: user.role,
+    }
+    res.redirect('/api/views');
+});
 
-    res.status(200).json({ message: 'Session created', user: userDB })
-    
-})
-
-router.get('/logout', (req, res) => {
+sessionsRouter.get("/logout", (req, res) => {
     req.session.destroy(err => {
-        if (err) return res.status(500).send({ status: "error", error: "No pudo cerrar sesion" })
-        res.redirect('/login');
-    })
+        if (err) return res.status(500).send({ status: "error", error: "Cant close session" });
+        res.redirect("/login")
+    });
+});
+
+// Github
+sessionsRouter.get("/github", passport.authenticate("github", { scope: ["user: email"] }))
+
+sessionsRouter.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/login', successRedirect: '/profile' }), async (req, res) => {
+    req.session.user = req.user
+    res.redirect('/profile')
 })
 
-//passport
+// Ruta Current
+sessionsRouter.get("/current", (req, res) => {
+    const userDto = new UsersDto(req.session.user);
+    res.status(200).json({ user: userDto })
+    
+});
 
-router.get("/githubSignup", passport.authenticate("github", { scope: ["user:email"] })
-);
-
-router.get("/github", passport.authenticate("github", {
-    failureRedirect: "/login"
-}), (req, res) => {
-    console.log(req.user);
-    req.session["username"] = req.user.username;
-    res.redirect("api/views/profile");
-}
-);
-
-//passport con google
-
-router.get('/auth/google',
-    passport.authenticate('google', { scope: ['user:email'] }));
-
-router.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    (req, res) => {
-        console.log(req.user);
-        req.session["username"] = req.user.username;
-        res.redirect("api/views/profile");
-    });
-
-export default router;
+export default sessionsRouter;

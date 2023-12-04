@@ -1,0 +1,156 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Productos
+      responses: 
+        "200":
+          description: Todos los productos fueron obtenidos correctamente
+        "404":
+          description: No se puede mostrar los productos
+
+    post:
+      summary: Crear un nuevo producto
+      tags: 
+        - Productos
+      parameters:
+        - in: body
+          name: product
+          description: Producto a crear
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              price:
+                type: number
+              stock:
+                type: number
+              thumbnail:
+                type: string
+              code: 
+                type: string
+              category:
+                type: string
+      responses: 
+        "200":
+          description: Producto creado con éxito
+        "404":
+          description: Error al crear producto
+    
+  /api/products/{pid}:
+    get:
+      summary: Obtener producto por ID
+      tags:
+        - Productos
+      parameters:
+        - in: path
+          name: pid
+          description: Obtener producto buscando por su ID
+          required: true
+          schema:
+            type: string
+      responses: 
+        "200":
+          description: Producto con ID obtenido con éxito
+        "404":
+          description: Producto no encontrado
+    
+    put:
+      summary: Actualizar producto por ID
+      tags:
+        - Productos
+      parameters:
+        - in: path
+          name: pid
+          description: Actualizar producto buscando por su ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/requestBodies/updateProduct"
+      responses: 
+        "200":
+          description: Producto con ID actualizado con éxito
+        "404":
+          description: Producto no actualizado
+
+    delete:
+      summary: Eliminar producto por ID
+      tags:
+        - Productos
+      parameters: 
+        - in: path
+          name: pid
+          required: true
+          description: Eliminar producto buscando por su ID
+          schema:
+            type: string
+      responses: 
+        "200":
+          description: Producto con ID eliminado con éxito
+        "404":
+          description: Producto no eliminado
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID del producto autogenerado por la Base de Datos
+        title:
+          type: string
+          description: Nombre del producto
+        description:
+          type: string
+          description: Pequeña descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        stock:
+          type: number
+          description: Cantidad de unidades del producto
+        thumbnail:
+          type: string
+          description: Pequeña imagen del producto
+        code:
+          type: string
+          description: Código único del producto
+        category:
+          type: string
+          description: Categoria del producto
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Nombre del producto
+        description:
+          type: string
+          description: Pequeña descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        stock:
+          type: number
+          description: Cantidad de unidades del producto
+        thumbnail:
+          type: string
+          description: Pequeña imagen del producto
+        code:
+          type: string
+          description: Código único del producto
+        category:
+          type: string
+          description: Categoria del producto
+  

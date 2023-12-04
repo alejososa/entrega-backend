@@ -1,83 +1,44 @@
 
-import { cartsMongo } from "../persistencia/DAOs/managers/carts/CartsMongo.js";
-import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js";
-import { productsModels } from "../persistencia/db/models/products.model.js";
-import { productService } from "./products.services.js";
+import { CartManagerMongo } from "../persistencia/DAOs/managers/carts/cartManagerMongo.js";
 
+class CartsService {
+    constructor() {
+        this.cartManager = new CartManagerMongo();
+    };
 
-class CartService {
+    async createCarts() {
+        const newCart = await this.cartManager.createCarts();
+        return newCart;
+    };
 
-
-    async createCart(obj) {
-        const response = await cartsMongo.createOne(obj);
-        return response
-    }
-
-    async deleteCart(id) {
-        const response = await cartsMongo.deleteOne(id)
-        return response
-    }
-
-    async findById(id) {     
-            const response = await cartsMongo.findById(id)
-            return response
-    }
-
-    async addProductToCart(cartId, productId, quantity) {
-
-        const response = await cartsMongo.addProductToCart(cartId, productId, quantity);
-        return response
-    }
-    async deleteProductFromCart(cartId, productId) {
-        const response = await cartsMongo.deleteProductFromCart(cartId, productId)
-        return response
-    }
-
-    async clearCart(cartId) {
-        const cart = await this.cartsMongo.clearCart(cartId);
+    async getCartsById(cid) {
+        const cart = await this.cartManager.getCartsById(cid);
         return cart;
     };
 
-
-    async calculateTotalAmount(cart) {
+    async addProductsInCart(cid, pid, quantity) {
         try {
-
-            if (!cart) {
-
-                throw new Error('Carrito no encontrado');
-            }
-            if (!Array.isArray(cart.products) || cart.products.length === 0) {
-
-                throw new Error('Carrito sin productos');
-            }
-            let totalAmount = 0;
-
-            
-            for (const productInfo of cart.products) {
-                
-                
-                const product = await productService.findById(productInfo);
-                
-                if (product !== null) {
-                    
-                    totalAmount += productInfo.quantity  ;
-
-                }
-            }
-            
-            
-            cart.totalAmount = totalAmount;
-            await cartsMongo.saveCart(cart);
-
-            return cart;
-            
+            const cart = await this.cartManager.addProductsInCart(cid, pid, quantity);
+            return this.totalQuantityInCart(cart)
         } catch (error) {
-            throw new Error('Error al calcular el total: ' + error.message);
+            return error
         }
-    }
-}
+    };
 
+    async deleteProductsInCart(cid, pid) {
+        const cart = await this.cartManager.deleteProductsInCart(cid, pid);
+        return cart;
+    };
 
+    async updateProductsInCart(cid, newProductsInCart) {
+        const cart = await this.cartManager.updateProductsInCart(cid, newProductsInCart);
+        return cart;
+    };
 
-export const cartService = new CartService();
+    async clearCart(cid) {
+        const cart = await this.cartManager.clearCart(cid);
+        return cart;
+    };
+};
 
+export const cartsService = new CartsService();

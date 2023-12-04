@@ -1,148 +1,100 @@
-import { Router } from "express"
-//comiteado para usar mongoose
-//import cartManager from "../CartManager.js";
-import { cartsMongo } from "../persistencia/DAOs/managers/carts/CartsMongo.js";
-import { productsMongo } from "../persistencia/DAOs/managers/products/ProductsMongo.js"
-import { cartService } from "../services/carts.services.js";
-import { productService } from "../services/products.services.js";
-import { ticketServices } from "../services/ticket.services.js";
-import { generateUniqueCode } from "../codeGenerator.js";
-import { productsModels } from "../persistencia/db/models/products.model.js";
-const router = Router();
+import { Router } from "express";
+import { CartManagerMongo } from "../persistencia/DAOs/managers/carts/cartManagerMongo.js";
+import { isUser } from "../middlewares/auth.middleware.js";
+import logger from "../winston.js";
+
+const cartRouter = Router();
+const CM = new CartManagerMongo();
 
 
 
-// Ruta para crear un nuevo carrito
-router.post('/', (req, res) => {
-    //const newCartId = cartManager.createCart();
-    const { cart_name } = req.body;
-    if (!cart_name) {
-        return res.status("complete all  fields")
-    }
-    //const newCartId= cartsMongo.createOne()
-    //if (newCartId !== null) {
-    //  res.status(201).json({ id: newCartId });
-    //} else {
-    //  res.status(500).json({ error: 'Error al crear el carrito' });
-    //}
+// Crear carrito
+cartRouter.post("/", (req, res) => {
+    const newCart = CM.createCarts();
+    logger.info("Cart created");
+    res.status(400).json(newCart);
+});
+
+// Agregar productos al carrito
+cartRouter.post("/:cid/product/:pid", isUser, async (req, res) => {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
+    const { quantity } = req.body;
+    if (!quantity || isNaN(quantity)) {
+        logger.error("Not possible");
+        return res.status(404).send({status: "error", message: "Not possible"});
+    };
+    const cart = CM.addProductsInCart(cid, pid, quantity);
+    if (!cart) {
+        logger.error("Not possible");
+        return res.status(404).send({status: "error", message: "Not possible"});
+    };
+    res.json(cart);
+});
+
+// Actualizar productos
+cartRouter.put("/:cid", async (req, res) => {
+    const cid = req.params.cid;
+    const products = req.body.products;
     try {
-        const newCart = cartsMongo.createOne(req.body)
-        res.status(200).json({ message: "cart created", user: newCart })
+        const cart = await CM.updateProductsInCart(cid, products);
+        res.json(cart);
     } catch (error) {
-        res.status(500).json({ error })
+        logger.error("Cant actualize cart");
+        res.status(404).json({status: "error", message: "Cant actualize cart"});
     }
 });
-//ruta para obetener todos los carritos
 
-router.get('/', async (req, res) => {
+// Eliminar producto 
+cartRouter.delete("/:cid/product/:pid", async (req, res) => {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
     try {
-        const carts = await cartsMongo.findAll()
-        res.status(200).json({ message: "Carts", carts })
-        return carts
-    } catch (error) {
-        res.status(500).json({ error })
-    }
-
-});
-// Ruta para obtener un carrito por su ID
-router.get('/:id', async (req, res) => {
-    const cartId = req.params
-    try {
-        //const cart = await cartManager.getCartById(+cartId);
-        const cart = await cartsMongo.findById(cartId)
-        //res.json(cart.products)
-        res.status(200).json({ message: "cart founded", cart })
-    } catch (err) {
-        res.status(500).json({ message: "cart not founded" })
-
-    }
-});
-//ruta para borrar carrito
-
-router.delete('/:id', async (req, res) => {
-    const cartId = req.params.id
-    try {
-        const response = await cartsMongo.deleteOne(cartId)
-        res.status(200).json({ message: "cart deleted" })
-    } catch (error) {
-        res.status(500).json({ message: "id not founded" })
-    }
-})
-// Ruta para agregar un producto a un carrito, todo por body
-
-router.put('/', async (req, res) => {
-    try {
-        const { cartId, productId, quantity } = req.body
-        if (!cartId || !productId || isNaN(quantity)) {
-            return res.status(400).json({ message: "Invalid input" });
-        }
-        const response = await cartsMongo.addProductToCart(cartId, productId, quantity);
-        res.status(200).json({ message: "Cart updated", cart: response });
-    } catch (error) {
-        res.status(500).json({ message: "Can't update cart", error: error.message });
-    }
-})
-
-//ruta para deletear un producto de un carrito determinado 
-
-router.delete('/:cartId/products/:productId', async (req, res) => {
-
-    try {
-        const { cartId, productId } = req.params
-        const result = await cartsMongo.deleteProductFromCart(cartId, productId);
-        res.status(200).json({ message: "product deleted" });
-    } catch (error) {
-        res.status(500).json({ error })
-    }
-})
-
-//para la compra
-
-router.post('/:id/purchase', async (req, res) => {
-    const cartId = req.params.id
-    try {
-        const cart = await cartService.findById(cartId);
+        const cart = await CM.deleteProductsInCart(cid, pid);
         if (!cart) {
-            return res.status(400).json({ error: "cart not found" });
+            logger.error("Cant find cart");
+            return res.status(404).send({status: "error", message: "Cant find cart"});
         }
-        
+        res.json(cart);
+    } catch (error) {
+        logger.error("Cant eliminate product");
+        return res.status(404).send({status: "error", message: "Cant eliminate product"});
+    };
+});
 
-        if (typeof cart.products === 'object' && cart.products !== null) {
-            // Convierte los valores de las propiedades del objeto en un arreglo
-            const productInfos = Object.values(cart.products);
-
-
-            for (const productInfo of productInfos) {
-                const product = await productService.findById(productInfo);
-
-                if (!product) {
-                    return res.status(400).json({ error: "Product not found" });
-                }
-                if (productInfo.quantity > product.stock) {
-                    return res.status(400).json({ error: "No stock" })
-                } else {
-                    
-                    product.stock -= productInfo.quantity;
-
-                }
+//  Purchase
+cartRouter.post("/:cid/purchase", async (req, res) => {
+    const cid = req.params.cid;
+    try {
+        const cart = await cartsService.getCartsById(cid);
+        if (!cart) {
+            return res.status(300).json({error: "Cant dinf cart"});
+        }
+        for (const productsOnCart of cart.products) {
+            const product = await productsService.getProductsById(productsOnCart.product);
+            if (!product) {
+                return res.status(404).json({error: "product not found"});
             }
+            if (productsOnCart.quantity > product.stock) {
+                return res.status(400).json({error: "Not enough stock for this product"});
+            }
+            product.stock -= productsOnCart.quantity;
+            await product.save();
         }
-
-         await cartService.calculateTotalAmount(cart);
-
-        const purchaseTicket = {
+        await cartsService.totalQuantityInCart(cart);
+        // Ticket
+        const ticketCompra = {
             code: await generateUniqueCode(),
             purchase_datetime: new Date(),
-            //falta solucionar la ruta para la cantidad
-            amount:  cart.totalAmount,
-            purchaser: "comprador"
-        }
-        const ticket = await ticketServices.createTickets(purchaseTicket);
-        await cartService.createCart(cartId);
-        res.status(200).json({ message: "Purchase completed, your ticket", ticket })
+            amount: cart.totalAmount,
+            purchaser: "purchaser"
+        };
+        const ticket = await ticketService.createTickets(ticketCompra);
+        await cartsService.clearCart(cid);
+        res.status(200).json({message: "Purchase complete", ticket});
     } catch (error) {
-        res.status(500).json({ "something go wrong": error.message })
+        res.status(500).json({error: error.message});
     }
-})
+});
 
-export default router;
+export default cartRouter;

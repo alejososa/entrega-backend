@@ -1,0 +1,113 @@
+paths:
+  /api/carts:
+    get:
+      summary: Obtener todos los carritos
+      tags:
+        - Carrito
+      responses: 
+        "200":
+          description: Todos los carritos fueron obtenidos correctamente
+        "404":
+          description: No se puede mostrar los carritos
+
+    post:
+      summary: Crear un nuevo carrito
+      tags: 
+        - Carrito
+      parameters:
+        - in: body
+          name: cart
+          description: Carrito a crear
+          required: true
+          schema:
+            type: object
+            properties:
+              _id:
+                type: string
+              quantity:
+                type: number
+                default: 1
+      responses: 
+        "200":
+          description: Carrito creado con éxito
+        "404":
+          description: Error al crear carrito
+
+  /api/carts/{cid}:
+    get:
+      summary: Obtener carrito por ID
+      tags:
+        - Carrito
+      parameters:
+        - in: path
+          name: cid
+          description: Obtener carrito buscando por su ID
+          required: true
+          schema:
+            type: string
+      responses: 
+        "200":
+          description: Carrito con ID obtenido con éxito
+        "404":
+          description: Carrito no encontrado
+    
+    put:
+      summary: Actualizar carrito por ID
+      tags:
+        - Carrito
+      parameters:
+        - in: path
+          name: cid
+          description: Actualizar carrito buscando por su ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/requestBodies/updateCart"
+      responses: 
+        "200":
+          description: Carrito con ID actualizado con éxito
+        "404":
+          description: Carrito no actualizado
+
+    delete:
+      summary: Eliminar carrito por ID
+      tags:
+        - Carrito
+      parameters: 
+        - in: path
+          name: cid
+          required: true
+          description: Eliminar carrito buscando por su ID
+          schema:
+            type: string
+      responses: 
+        "200":
+          description: Carrito con ID eliminado con éxito
+        "404":
+          description: Carrito no eliminado
+
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID del producto autogenerado por la Base de Datos
+        quantity:
+          type: number
+          default: 1
+  requestBodies:
+    updateCart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID del producto autogenerado por la Base de Datos
+        quantity:
+          type: number
+          default: 1

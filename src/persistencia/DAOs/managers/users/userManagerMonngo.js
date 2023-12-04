@@ -1,8 +1,7 @@
 import  userModel  from "../../../db/models/users.model.js";
 
-class UsersManager {
-
-    async create(user){
+class UsersManagerMongo {
+    async createUser(user) {
         try {
             const newUser = await userModel.create(user)
             return newUser
@@ -11,15 +10,16 @@ class UsersManager {
         }
     }
 
-    async findUser(username){
+    async findUser(username) {
         try {
-            const user = await userModel.findOne({username})
+            const user = await userModel.findOne(username)
             return user
         } catch (error) {
             return error
         }
     }
-    async findUserById(id){
+
+    async findUserById(id) {
         try {
             const user = await userModel.findById(id)
             return user
@@ -28,14 +28,23 @@ class UsersManager {
         }
     }
 
-    async deleteUser(username){
+    async updateUser(id, obj) {
         try {
-            const deletedUser= await userModel.findOneAndDelete(username)
-            return deletedUser
+            const user = await userModel.updateOne(id, obj)
+            return user
+        } catch (error) {
+            return error
+        }
+    }
+
+    async deleteUser(username) {
+        try {
+            const user = await userModel.findOneAndDelete({username})
+            return user
         } catch (error) {
             return error
         }
     }
 }
 
-export const usersManager = new UsersManager()
+export const usersManager = new UsersManagerMongo

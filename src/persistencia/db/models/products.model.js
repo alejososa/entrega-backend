@@ -5,38 +5,42 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 
 const productsSchema=new mongoose.Schema({
-    product_title:{
-        type:String,
-        required: true
-    },
-    product_description:{
+    title: {
         type: String,
-        required: true
+        required: true,
     },
-    product_price:{
+    description: {
+        type: String,
+        required: true,
+    },
+    price: {
         type: Number,
-        required: true
+        required: true,
     },
-    product_code:{
-        type:Number,
-        required:true,
-        unique: true
-    },
-    product_stock:{
+    stock: {
         type: Number,
-        required: true
+        required: true,
     },
-    product_category:{
+    thumbnail: {
         type: String,
-        required: true
+        required: false,
     },
-    product_thumbnail:{
+    code: {
         type: String,
+        unique: true,
+        required: true,
     },
-
-})
+    category: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: Boolean,
+        default: true,
+    }
+});
 
 //asocio el schema al plugin de paginate
 productsSchema.plugin(mongoosePaginate)
 
-export const productsModels= mongoose.model('products', productsSchema);
+export const productsModels= mongoose.model('Products', productsSchema);

@@ -1,6 +1,6 @@
 import { ticketModel } from "../../../db/models/ticket.models.js";
 
-class TicketManager{
+class TicketManagerMongo{
 async createTicket(ticket){
     const newticket= new ticketModel(ticket);
     await newticket.save();
@@ -8,4 +8,4 @@ async createTicket(ticket){
 }
 }
 
-export  {TicketManager};
+export  {TicketManagerMongo};

@@ -19,4 +19,4 @@ const ticketSchema = new mongoose.Schema({
         required: true,
     },
 });
-export const ticketModel = mongoose.model('Ticket', ticketSchema);
+export const ticketModel = mongoose.model('ticket', ticketSchema);

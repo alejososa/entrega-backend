@@ -1,164 +1,122 @@
 
-import express from 'express';
-import session from 'express-session'
-import cookieParser from 'cookie-parser';
-import productRouter from './routes/products.router.js';
-import cartRouter from './routes/cart.router.js';
-import handlebars from 'express-handlebars';
+import express from "express";
+import config from "./config.js";
+import viewRouter from "./routes/views.router.js";
+import productsRouter from "./routes/products.router.js";
+import cartRouter from "./routes/cart.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
-import { Server } from 'socket.io';
+import { __dirname } from "./utils.js";
+import handlebars from "express-handlebars";
+import {Server} from "socket.io";
 import "./persistencia/db/dbConfig.js";
-//import productManager from './managers/products/ProductManager.js';
-import { Message } from './persistencia/db/models/messages.models.js';
-import { productsMongo } from './persistencia/DAOs/managers/products/ProductsMongo.js';
-import MongoStore from 'connect-mongo';
-import viewsRouter from "./routes/views.router.js";
-import jwtRouter from "./routes/jwt.router.js"
-import FileStore from 'session-file-store';
-import mongoose from 'mongoose';
-import { __dirname } from './utils.js';
-import passport from 'passport';
-import './passport/passportStrategies.js'
-import userRouter from "./routes/user.router.js"
-import config from "./config.js"
-
+import cookieParser from "cookie-parser";
+import socketProducts from "./listeners/socketProducts.js";
+import session from "express-session";
+import FileStore from "session-file-store";
+import MongoStore from "connect-mongo";
+import passport from "passport";
+import "./services/passport/passportStrategies.js";
+import { generateProducts } from "./mocks/mockingproducts.js";
+import ProductError from "./errors/customErrors.js";
+import { ErrorMessages } from "./errors/numErrors.js";
+import {errorMiddleware} from "./errors/middlewareError.js";
+import { logger } from "./winston.js";
 
 const app = express();
-const fileStorage = FileStore(session);
+const PORT = process.env.PORT || 8080;
+const fileStore = FileStore(session)
 
-
-
-//codigo del sessi
-
- app.use(session({
-   store: new MongoStore({
-     mongoUrl: "mongodb+srv://alejososa1987:Mongo54321@cluster0.donqjdb.mongodb.net/entregaDataBase?retryWrites=true&w=majority",
-     ttl: 3600,
-   }),
-   secret: "secretSession",
-   resave: false,
-   saveUninitialized: false,
- }));
-
-//passport
-app.use(passport.initialize())
- app.use(passport.session())
-
-
-//handlebars
-
-app.engine('handlebars', handlebars.engine())
-app.set('views', __dirname + '/views')
-app.set('view engine', 'handlebars')
-
-// Estas dos líneas son claves para que el servidor entienda e interprete lo que pasa
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + "/public"));
+app.use(express.urlencoded({extended: true}));
 
-//cookies
+// Sessions
+app.use(cookieParser());
+app.use(session({
+        store: MongoStore.create({
+        mongoUrl: config.mongo_uri,
+        ttl: 60000,
+    }),
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+}));
 
-app.use(cookieParser("secretKeyCookies"))
+app.use(express.static(__dirname+"/public"));
 
+app.engine("handlebars", handlebars.engine());
+app.set("view engine", "handlebars");
+app.set("views", __dirname+"/views");
 
-app.get("/guardarcookie", (req, res) => {
-  res.cookie("cookie1", "primeraCookie").send()
-})
-app.get("/leercookie", (req, res) => {
-  console.log(req);
-  const { cookie1 } = req.cookies
-  res.json({ message: "Leyendo cookie", ...req.cookies, ...req.signedCookies });
-})
-app.get("/eliminarcookie", (req, res) => {
-  res.clearCookie("cookie1").send("eliminando cookie")
-})
-app.get("/guardarcookiefirmada", (req, res) => {
-  res.cookie("cookienormal", "primera cookie", { signed: true }).send()
-})
-
-
-
-// Rutas
-app.use('/api/products', productRouter);
-app.use('/api/carts', cartRouter);
-app.use('/api/views', viewsRouter);
-app.use('/api/views/delete/:id', viewsRouter);
-app.use('/api/jwt', jwtRouter);
-app.use('/api/sessions', sessionsRouter);
-
-//autentication
-app.use('/api/autentication', userRouter)
-
-//y sus rutas
-//rutas para la session
+app.use("/api/views", viewRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/views/products", productsRouter);
+app.use("/api/carts", cartRouter);
+app.use("/api/session", sessionsRouter);
 
 
-app.get("/register", (req, res) => {
-  res.render('register');
+app.get('/', (req, res) => {
+    res.send('Bienvenidos!');
+});
+
+app.get('/chat', (req, res) => {
+    res.render('chat', { messages: [] }); 
 });
 
 app.get('/login', (req, res) => {
-  res.render("login");
+    res.render('login'); 
 });
-
+  
+app.get('/register', (req, res) => {
+    res.render('register'); 
+});
+  
 app.get('/profile', (req, res) => {
-  res.render('profile', {
-    user: req.session.user
-  });
+    res.render('profile', {
+    user: req.session.user,
+    }); 
 });
-
-
-
-//ruta al chat 
-
-app.get('/chat', async (req, res) => {
-  const messages = await Message.find().sort('-timestamp'); // Obtén los mensajes de la base de datos
-  res.render('chat', { messages });
-});
-
-
-
-const PORT = config.port;
+  
+// Passport
+app.use(passport.initialize())
+app.use(passport.session())
 
 const httpServer = app.listen(PORT, () => {
-  console.log(`Escuchando al puerto ${PORT}`)
-})
-
-//Sockets
+    logger.info(`Conectado al puerto ${PORT}`);
+});
 
 const socketServer = new Server(httpServer);
 
-socketServer.on('connection', (socket) => {
-  console.log('Cliente conectado', socket.id);
-  socket.on('disconnect', () => {
-    console.log(`Cliente desconectado`);
-  });
+const mensajes = [];
 
-  //le agregamos  un producto
-
-  socket.on("addProduct", async (newProduct) => {
-    const addedProduct = await productsMongo.createOne(newProduct);
-    socketServer.emit("product created", addedProduct);
-  });
-
-  socket.on('deleteProduct', (productId) => {
-    productsMongo.deleteOne(Number(productId));
-    socketServer.emit('productDeleted', productId);
-    socketServer.emit('newProductList');
-  });
-
-  socket.on('chatMessage', async (messageData) => {
-    const { user, message } = messageData;
-    const newMessage = new Message({ user, message });
-    await newMessage.save();
-
-    // Emitir el mensaje a todos los clientes conectados
-    socketServer.emit('chatMessage', { user, message });
-
-    console.log(`Mensaje guardado en la base de datos: ${user}: ${message}`);
-  });
+socketProducts(socketServer);
 
 
+// Mocking Products
+app.get("/api/mockingproducts", (req, res) => {
+    const mockProducts = [];
+    for (let i = 0; i < 100; i++) {
+        const productsMock = generateProducts();
+        mockProducts.push(productsMock);
+    }
+    res.json(mockProducts);
+});
 
+// Error
+app.get("/products", (req, res) => {
+    
+    ProductError.createError(ErrorMessages.PRODUCT_NOT_FOUND)
+        
+});
 
+app.use(errorMiddleware);
+
+// Logger
+app.get("/loggerTest", (req, res) => {
+    logger.fatal("Fatal");
+    logger.error("Error");
+    logger.warning("Warning");
+    logger.info("Info");
+    logger.http("Http");
+    logger.debug("Debug");
+    res.send("Logger Test");
 });

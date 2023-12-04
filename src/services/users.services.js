@@ -1,33 +1,25 @@
-import { response } from "express";
-import { usersManager } from "../persistencia/DAOs/managers/users/userManager.js";
-import UsersDto from "../persistencia/DTOs/user.dtos.js";
-import { hashData } from "../utils.js";
+import { usersManager } from "../persistencia/DAOs/managers/users/userManagerMonngo.js";
 
+class UsersService {
+    async createUser(user) {
+        const newUser = await usersManager.create(user);
+        return newUser;
+    };
 
-class UserServices {
     async findUser(username) {
-        const response = await usersManager.findUser(username)
-        return response
-    }
-    async findById(id) {
-        const response = await usersManager.findUserById(id)
-        if (!response) {
-            throw new error("Id not registered")
-        }
-        return response
-    }
-    async createOne(obj) {
-        const hashPassword = await hashData(obj.password)
-        if (!hashPassword) throw new error("Password cant be hashed");
-        const userDto = new UsersDto({ ...obj, password: hashPassword });
-        const response = await usersManager.create(userDto);
-        return response
-    }
+        const users = await usersManager.findUser(username);
+        return users;
+    };
 
-    async deleteOne(username) {
+    async updateUser(id, obj) {
+        const users = await usersManager.updateUser(id, obj);
+        return users;
+    };
+
+    async deleteUser(username) {
         const response = await usersManager.deleteUser(username);
         return response;
-    }
-}
+    };
+};
 
-export const usersService = new UserServices();
+export const usersService = new UsersService();

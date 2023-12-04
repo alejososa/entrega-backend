@@ -1,51 +1,65 @@
-import { productService } from "../services/products.services.js";
+import { productsService } from "../services/products.services.js";
 
-class ProductsControllers {
-
-    async findAll(req, res) {
-        try {
-            const products = await productService.findAll()
-            res.status(200).json({ message: "success", products });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
+export const addProducts = async (req, res) => {
+    try {
+        const newProduct = await productsService.addProducts(req.body);
+        res.status(200).json({product: newProduct})
+    } catch (error) {
+        return res.status(300).send({status: "error"});
     }
+};
 
-    async getProductById(req, res) {
-        const {productId} = req.params;
-        try {
-            const product = await productService.findById(productId);
-            if (product) {
-                res.status(200).json({ product })
-
-            } else {
-                return res.status(201).send({ status: "error", message: "Producto con ID no encontrado" });
-            }
-        } catch (error) {
-            return res.status(300).send({ status: "error" });
-        }
+export const getProducts = async (req, res) => {
+    const {page, limit} = req.query;
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    try {
+        const products = await productsService.getProducts(pageNumber, limitNumber)
+        res.status(200).json({products})
+    } catch (error) {
+        return res.status(300).send({status: "error"});
     }
+};    
 
-
-    async createOne(req, res) {
-        const { product_title, product_description, product_price, product_code, product_stock, product_category, product_thumbnail } = req.body;
-        if (!product_title || !product_description || !product_price || !product_code || !product_stock || !product_category || !product_thumbnail) {
-            return res.status(400).json({ message: "Product data is missing" });
+export const getProductsById = async (req, res) => {
+    const {pid} = req.params;
+    try {
+        const product = await productsService.getProductsById(pid);
+        if (product) {
+            res.status(200).json({product})
+        } else {
+            return res.status(201).send({status: "error", message: "Producto con ID no encontrado"});
         }
-        try {
-            const newProduct = await productService.createOne(req.body);
-            res.status(200).json({ message: "New product created", newProduct })
-        } catch (error) {
-            res.status(500).json({ message: error.message });
+    } catch (error) {
+        return res.status(300).send({status: "error"});
+    }
+};
+
+export const updateProducts = async (req, res) => {
+    const {pid} = req.params;
+    const {updatedProducts} = req.body;
+    try {
+        const updateProduct = await productsService.updateProducts(pid, updatedProducts);
+        if (updateProduct) {
+            res.status(200).json({product: updateProduct})
+        } else {
+            return res.status(201).send({status: "error", message: "Producto no encontrado"});
         }
+    } catch (error) {
+        return res.status(300).send({status: "error"});
     }
+};
 
-    async deleteOne(req, res) {
-        const { productId } = req.params;
-        const deletedProduct = await productService.deleteOne(productId);
-        return res.status(200).json({ message: "Product deleted" })
-
+export const deleteProducts = async (req, res) => {
+    const {pid} = req.params;
+    try {
+        const deletedProducts = await productsService.deleteProducts(pid);
+        if (deletedProducts) {
+            res.status(200).json({product: deletedProducts})
+        } else {
+            return res.status(201).send({status: "error", message: "Producto no encontrado"});
+        }
+    } catch (error) {
+        return res.status(300).send({status: "error"});
     }
-}
-
-export const productsControllers = new ProductsControllers();
+};

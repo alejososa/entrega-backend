@@ -14,27 +14,15 @@ form.addEventListener('submit', async (event) => {
     //cambio estas lineas para indicar donde hacer el fetch
 
     
-    const response = await fetch('/api/sessions/login', {
-        //const response= await fetch("/api/jwt/login" , {
+    fetch('/api/session/login',{
         method: 'POST',
         body: JSON.stringify(obj),
         headers: {
             'Content-Type': 'application/json'
         }
-
-        
+    }).then(result=>{
+        if(result.status == 200){
+            window.location.replace('http://localhost:8080/api/views/profile');
+        }
     })
-
-
-
-    const responseData = await response.json();
-    console.log(responseData);
-
-
-
-    if (response.status === 200) {
-        window.location.replace('http://localhost:8080/api/views/profile');
-    }
-
-    
-});
+})
