@@ -54,6 +54,7 @@ app.use("/api/carts", cartRouter);
 app.use("/api/session", sessionsRouter);
 
 
+
 app.get('/', (req, res) => {
     res.send('Bienvenidos!');
 });
