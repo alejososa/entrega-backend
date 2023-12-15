@@ -2,7 +2,8 @@ import { Router } from "express";
 import { CartManagerMongo } from "../persistencia/DAOs/managers/carts/cartManagerMongo.js";
 import { isUser } from "../middlewares/auth.middleware.js";
 import logger from "../winston.js";
-
+import { cartsService } from "../services/carts.services.js";
+import {productsService} from "../services/products.services.js"
 const cartRouter = Router();
 const CM = new CartManagerMongo();
 
@@ -68,7 +69,7 @@ cartRouter.post("/:cid/purchase", async (req, res) => {
     try {
         const cart = await cartsService.getCartsById(cid);
         if (!cart) {
-            return res.status(300).json({error: "Cant dinf cart"});
+            return res.status(300).json({error: "Cant find cart"});
         }
         for (const productsOnCart of cart.products) {
             const product = await productsService.getProductsById(productsOnCart.product);
